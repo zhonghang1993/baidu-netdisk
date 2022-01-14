@@ -6,7 +6,34 @@
 
     <groupId>io.github.zhonghang1993</groupId>
     <artifactId>baidu-netdisk</artifactId>
+    <name>baidu-netdisk</name>
+    <url>https://github.com/zhonghang1993/baidu-netdisk</url>
+    <description>baidu netdisk SDK</description>
     <version>1.0.0</version>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>https://github.com/zhonghang1993/baidu-netdisk.git</connection>
+        <developerConnection>https://github.com/zhonghang1993/baidu-netdisk.git</developerConnection>
+        <url>https://github.com/zhonghang1993/baidu-netdisk.git</url>
+    </scm>
+
+    <developers>
+        <developer>
+
+            <name>zhonghang1993</name>
+            <email>zhonghang1993@qq.com</email>
+            <roles>
+                <role>leader</role>
+            </roles>
+        </developer>
+    </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,7 +45,7 @@
         <dependency>
             <groupId>com.baidubce</groupId>
             <artifactId>bce-java-sdk</artifactId>
-            <version>0.10.185</version>
+            <version>0.10.188</version>
         </dependency>
 
         <dependency>
@@ -53,7 +80,7 @@
     </distributionManagement>
 
 
-    <!--<build>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -82,5 +109,5 @@
                 </executions>
             </plugin>
         </plugins>
-    </build>-->
+    </build>
 </project>

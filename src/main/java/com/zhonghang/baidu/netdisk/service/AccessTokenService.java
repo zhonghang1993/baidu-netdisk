@@ -36,8 +36,9 @@ public class AccessTokenService {
 
     /**
      * 获取accessToken
-     * @param code
-     * @return
+     * @param code 回调的code
+     * @return token信息
+     * @throws AccessTokenException 验证异常
      */
     public synchronized AccessTokenVo generateAccessToken(String code) throws AccessTokenException {
         if(StrUtil.isBlankIfStr(code)){

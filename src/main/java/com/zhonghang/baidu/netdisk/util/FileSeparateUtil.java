@@ -9,10 +9,12 @@ import java.io.*;
  */
 @Slf4j
 public class FileSeparateUtil {
+
     /**
-     * @param: filePath
-     * @param: unit 单个文件大小
-     * @return: 返回文件的目录
+     * 文件切割
+     * @param obj 目录，文件等
+     * @param unit 分片大小
+     * @return File[]
      */
     public static File[] separate(Object obj, Integer unit) {
 

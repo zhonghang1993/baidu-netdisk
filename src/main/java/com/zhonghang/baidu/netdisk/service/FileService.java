@@ -35,7 +35,7 @@ public class FileService {
 
     /**
      * 获取扫码授权地址
-     * @return
+     * @return 扫码授权地址
      */
     public String getGrantUrl(){
         return "https://openapi.baidu.com/oauth/2.0/authorize?response_type=code&client_id="+baiduConfig.getAppKey()
@@ -45,8 +45,8 @@ public class FileService {
     /**
      * 获取文件列表
      *
-     * @param listFile
-     * @return
+     * @param listFile 列表请求对象
+     * @return 文件列表
      */
     public ListFileResponse listFile(ListFileRequest listFile) {
         StsInfo stsInfo = stsService.getStsInfo();
@@ -62,7 +62,7 @@ public class FileService {
 
     /**
      * 管理文件，移动，重命名，删除
-     * @param managerFileRequest
+     * @param managerFileRequest 请求对象
      */
     public void managerFile(ManagerFileRequest managerFileRequest){
         StsInfo stsInfo = stsService.getStsInfo();
@@ -82,7 +82,8 @@ public class FileService {
 
     /**
      * 下载文件
-     * @param fid
+     * @param saveFilePath 下载存储地址
+     * @param fid 文件fid
      */
     public void download(String saveFilePath ,String... fid){
         StsInfo stsInfo = stsService.getStsInfo();
@@ -105,7 +106,8 @@ public class FileService {
 
     /**
      * 获取文件信息
-     * @param fileInfoRequest
+     * @param fileInfoRequest 文件请求
+     * @return 多个文件返回
      */
     public List<FileInfoResponse> fileInfo(FileInfoRequest fileInfoRequest){
         StsInfo stsInfo = stsService.getStsInfo();
@@ -121,8 +123,8 @@ public class FileService {
 
     /**
      * 文件的预签名链接
-     * @param dLinkDto
-     * @return
+     * @param dLinkDto 下载请求参数
+     * @return 下载返回信息
      */
     public List<DLinkResponse> dLink(DLinkDto dLinkDto){
         InternalRequest request = new InternalRequest(HttpMethodName.POST, URI.create( "https://pan.baidu.com/eopen/api/exdownload?sts_token="+ stsService.getStsInfo().getSessionToken()));

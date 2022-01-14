@@ -43,7 +43,7 @@ public class SuperFileService {
     /**
      * @param localFilePath 本地上传的文件路径
      * @param saveFilePath 云端文件路径
-     * @return
+     * @return 上传成功结果
      */
     public SliceCreateResponse upload(String localFilePath , String saveFilePath) {
 
@@ -98,14 +98,10 @@ public class SuperFileService {
         return sliceCreateVo;
     }
 
-
     /**
-     * @Description: TODO 预上传
-     * @param: cloudPath 云端路径
-     * @param: size 文件大小 字节
-     * @param: isDir 0文件 1目录（设置为目录是 size要设置为0）
-     * @param: blockList （文件的md5值） 可以把文件分为多个，然后分批上传
-     * @return: java.lang.String
+     * 预上传请求参数
+     * @param preUploadDto 预上传请求参数
+     * @return PreUploadResponse
      */
     public PreUploadResponse preUpload(PreUploadDto preUploadDto) {
         StsInfo stsInfo = stsService.getStsInfo();
@@ -131,11 +127,9 @@ public class SuperFileService {
     }
 
     /**
-     * @Description: TODO 分片上传
-     * @param: path 上传到百度网盘的地址
-     * @param: uploadid 上传的id
-     * @param: filePath 本地文件的地址
-     * @return: java.lang.String
+     *  分片上传
+     * @param: uploadDto 分片上传请求参数
+     * @param: files 文件
      */
     private void upload(SliceUploadDto uploadDto , File[] files) {
         for (int i = 0; i < files.length; i++) {
