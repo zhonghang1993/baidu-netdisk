@@ -73,6 +73,14 @@ storageDaoI.clear();
 <logger name="com.zhonghang.baidu" level="DEBUG"/>
 ```
 
+## 四、加群
+
+- 点击链接加入群聊【百度企业网盘SDK】：https://jq.qq.com/?_wv=1027&k=r6RmOwvn
+- 群号：897493498
+- 扫码入群：
+
+![avatar](group.png)
+
 ## 四、支持作者
 - 如果节省了你的时间，对你有帮助，请给我点支持。^_^ 一分不嫌少，一块不嫌多
 
