@@ -14,7 +14,17 @@
 
 ## 一、使用例子
 
-### 1-1 构建
+### 1-1 引入依赖
+
+```xml
+<dependency>
+    <groupId>io.github.zhonghang1993</groupId>
+    <artifactId>baidu-netdisk</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+### 1-2 构建
 
 ```java
 BaiduConfig baiduConfig = new BaiduConfig(appId,appName,appKey,secretKey,singKey,redirectUri,filePrefix,unit);
@@ -23,7 +33,7 @@ BaiduNetDisk baiduNetDisk = new BaiduNetDisk(baiduConfig);
 //BaiduNetDisk baiduNetDisk = new BaiduNetDisk(baiduConfig,storageDaoI);
 ```
 
-### 1-2 调用说明
+### 1-3 调用说明
 
 ```java
 //获取accessToken的类，获取二维码扫码地址、通过code鉴权
