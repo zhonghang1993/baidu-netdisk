@@ -6,10 +6,16 @@
 
     <groupId>io.github.zhonghang1993</groupId>
     <artifactId>baidu-netdisk</artifactId>
+    <packaging>pom</packaging>
     <name>baidu-netdisk</name>
     <url>https://github.com/zhonghang1993/baidu-netdisk</url>
+    <modules>
+        <module>baidu-netdisk-cp</module>
+        <module>baidu-netdisk-cp-spring-boot-start</module>
+        <module>baidu-netdisk-cp-demo</module>
+    </modules>
     <description>baidu netdisk SDK</description>
-    <version>1.0.0</version>
+    <version>1.0-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -26,8 +32,7 @@
 
     <developers>
         <developer>
-
-            <name>zhonghang1993</name>
+            <name>zhonghang</name>
             <email>zhonghang1993@qq.com</email>
             <roles>
                 <role>leader</role>
