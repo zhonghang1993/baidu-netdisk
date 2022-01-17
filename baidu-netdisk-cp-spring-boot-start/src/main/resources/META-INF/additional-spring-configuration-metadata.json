@@ -1,0 +1,50 @@
+{
+  "properties": [
+    {
+      "name": "baidu.netdisk.cp.net.disk.appId",
+      "type": "java.lang.String",
+      "description": "应用创建成功后将获取对应的Appid.",
+      "defaultValue": ""
+    },{
+      "name": "baidu.netdisk.cp.net.disk.appName",
+      "type": "java.lang.String",
+      "description": "应用名称.",
+      "defaultValue": ""
+    },{
+      "name": "baidu.netdisk.cp.net.disk.appKey",
+      "type": "java.lang.String",
+      "description": "应用创建成功后将获取对应的appKey.",
+      "defaultValue": ""
+    },{
+      "name": "baidu.netdisk.cp.net.disk.secretKey",
+      "type": "java.lang.String",
+      "description": "应用创建成功后将获取对应的secretKey.",
+      "defaultValue": ""
+    },{
+      "name": "baidu.netdisk.cp.net.disk.singKey",
+      "type": "java.lang.String",
+      "description": "应用创建成功后将获取对应的singKey.",
+      "defaultValue": ""
+    },{
+      "name": "baidu.netdisk.cp.net.disk.redirectUri",
+      "type": "java.lang.String",
+      "description": "授权回调地址.",
+      "defaultValue": ""
+    },{
+      "name": "baidu.netdisk.cp.net.disk.filePrefix",
+      "type": "java.lang.String",
+      "description": "文件上传前缀.",
+      "defaultValue": ""
+    },{
+      "name": "baidu.netdisk.cp.net.disk.unit",
+      "type": "java.lang.Integer",
+      "description": "分片上传时，分片大小，单位M.",
+      "defaultValue": "32"
+    },{
+      "name": "baidu.netdisk.cp.net.disk.storageRule",
+      "type": "java.lang.String",
+      "description": "用户授权后token存储规则.",
+      "defaultValue": "com.zhonghang.baidu.netdisk.cp.storage.impl.MemoryStorageDao"
+    }
+  ]
+}
