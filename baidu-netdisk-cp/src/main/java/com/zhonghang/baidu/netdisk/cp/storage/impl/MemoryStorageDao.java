@@ -26,6 +26,12 @@ public class MemoryStorageDao extends StorageDaoI {
     }
 
     @Override
+    public AccessTokenVo getDefaultAccessToken() {
+        //默认取第一个
+        return (AccessTokenVo) accessTokenVos.values().toArray()[0];
+    }
+
+    @Override
     public void saveOrganizationInfo(OrganizationInfo organizationInfo) {
         this.organizationInfos.put(organizationInfo.getCid(), organizationInfo);
     }
@@ -36,6 +42,12 @@ public class MemoryStorageDao extends StorageDaoI {
     }
 
     @Override
+    public OrganizationInfo getDefaultOrganizationInfo() {
+        //默认取第一个
+        return (OrganizationInfo) organizationInfos.values().toArray()[0];
+    }
+
+    @Override
     public void saveStsInfo(StsInfo stsInfo,Long cid) {
         this.stsInfos.put(cid,stsInfo);
     }
@@ -43,5 +55,11 @@ public class MemoryStorageDao extends StorageDaoI {
     @Override
     public StsInfo getStsInfo(Long cid) {
         return stsInfos.get(cid);
+    }
+
+    @Override
+    public StsInfo getDefaultStsInfo() {
+        //默认取第一个
+        return (StsInfo) stsInfos.values().toArray()[0];
     }
 }

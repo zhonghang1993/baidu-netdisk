@@ -21,7 +21,7 @@
         <dependency>
             <groupId>io.github.zhonghang1993</groupId>
             <artifactId>baidu-netdisk-cp</artifactId>
-            <version>1.0.0</version>
+            <version>1.5.0</version>
         </dependency>
 
 

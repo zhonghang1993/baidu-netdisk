@@ -3,6 +3,7 @@ package com.zhonghang.baidu.netdisk.cp;
 import cn.hutool.core.util.StrUtil;
 import com.zhonghang.baidu.netdisk.cp.storage.StorageDaoI;
 import com.zhonghang.baidu.netdisk.cp.storage.impl.MemoryStorageDao;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -15,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
  * Created by zhonghang  2022/1/17.
  */
 @Configuration
+@Slf4j
 @EnableConfigurationProperties(BdNetdiskCpProperties.class)
 public class BdNetdiskCpAutoConfiguration implements ApplicationContextAware {
     private ApplicationContext applicationContext;
@@ -28,7 +30,9 @@ public class BdNetdiskCpAutoConfiguration implements ApplicationContextAware {
                 StrUtil.isBlank(bdNetdiskCpProperties.getSecretKey())||
                 StrUtil.isBlank(bdNetdiskCpProperties.getStorageRule())
         ){
-            throw new RuntimeException(">>> 百度企业网盘缺少必要配置信息，请配置后再启动，查看详细文档：https://github.com/zhonghang1993/baidu-netdisk");
+            log.error("百度企业网盘缺少必要配置信息，请配置后再启动。否则会导致一系列未知错误。查看详细文档：https://github.com/zhonghang1993/baidu-netdisk");
+//            throw new RuntimeException(">>> 百度企业网盘缺少必要配置信息，请配置后再启动，查看详细文档：https://github.com/zhonghang1993/baidu-netdisk");
+            return null;
         }
         BaiduNetDisk baiduNetDisk = new BaiduNetDisk(bdNetdiskCpProperties,verifyStorage(bdNetdiskCpProperties.getStorageRule()));
         return baiduNetDisk;
