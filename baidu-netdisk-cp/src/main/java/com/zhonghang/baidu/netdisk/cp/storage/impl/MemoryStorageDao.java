@@ -1,6 +1,7 @@
 package com.zhonghang.baidu.netdisk.cp.storage.impl;
 
 import com.zhonghang.baidu.netdisk.cp.dto.StsInfo;
+import com.zhonghang.baidu.netdisk.cp.exception.NetDiskException;
 import com.zhonghang.baidu.netdisk.cp.response.AccessTokenVo;
 import com.zhonghang.baidu.netdisk.cp.response.OrganizationInfo;
 import com.zhonghang.baidu.netdisk.cp.storage.StorageDaoI;
@@ -26,12 +27,6 @@ public class MemoryStorageDao extends StorageDaoI {
     }
 
     @Override
-    public AccessTokenVo getDefaultAccessToken() {
-        //默认取第一个
-        return (AccessTokenVo) accessTokenVos.values().toArray()[0];
-    }
-
-    @Override
     public void saveOrganizationInfo(OrganizationInfo organizationInfo) {
         this.organizationInfos.put(organizationInfo.getCid(), organizationInfo);
     }
@@ -43,6 +38,9 @@ public class MemoryStorageDao extends StorageDaoI {
 
     @Override
     public OrganizationInfo getDefaultOrganizationInfo() {
+        if(organizationInfos.size() > 1){
+            throw new NetDiskException("存在管理多个网盘情况，请重写重写默认存储规则。或者使用cid模式对网盘进行管理");
+        }
         //默认取第一个
         return (OrganizationInfo) organizationInfos.values().toArray()[0];
     }
@@ -57,9 +55,4 @@ public class MemoryStorageDao extends StorageDaoI {
         return stsInfos.get(cid);
     }
 
-    @Override
-    public StsInfo getDefaultStsInfo() {
-        //默认取第一个
-        return (StsInfo) stsInfos.values().toArray()[0];
-    }
 }

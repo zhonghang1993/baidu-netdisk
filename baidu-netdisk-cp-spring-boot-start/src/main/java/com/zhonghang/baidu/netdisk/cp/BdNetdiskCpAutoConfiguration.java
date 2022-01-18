@@ -24,7 +24,7 @@ public class BdNetdiskCpAutoConfiguration implements ApplicationContextAware {
     private BdNetdiskCpProperties bdNetdiskCpProperties;
 
     @Bean
-    public BaiduNetDisk baiduNetDisk(){
+    public BaiduNetDisk baiduNetDisk() throws ClassNotFoundException {
         if(StrUtil.isBlank(bdNetdiskCpProperties.getAppId()) ||
                 StrUtil.isBlank(bdNetdiskCpProperties.getAppKey()) ||
                 StrUtil.isBlank(bdNetdiskCpProperties.getSecretKey())||
@@ -38,18 +38,21 @@ public class BdNetdiskCpAutoConfiguration implements ApplicationContextAware {
         return baiduNetDisk;
     }
 
-    private StorageDaoI verifyStorage(String storageDaoIPath)  {
+    private StorageDaoI verifyStorage(String storageDaoIPath) throws ClassNotFoundException {
 
         if(MemoryStorageDao.class.getName().equals(storageDaoIPath)){
             return new MemoryStorageDao();
         }
         //从spring容器中查找该对象并注入
-        StorageDaoI storageDaoI = applicationContext.getBean(storageDaoIPath, StorageDaoI.class);
+         Object storageDaoI = applicationContext.getBean(Class.forName(storageDaoIPath));
         if(storageDaoI == null){
             throw new RuntimeException("根据您设定的路径，在spring容器中未找到自定义的Storage存储规则实现");
         }
+        if(! (storageDaoI instanceof StorageDaoI)){
+            throw new RuntimeException("自定义的存储规则必须继承并实现StorageDaoI");
+        }
 
-        return storageDaoI;
+        return (StorageDaoI) storageDaoI;
 
     }
 

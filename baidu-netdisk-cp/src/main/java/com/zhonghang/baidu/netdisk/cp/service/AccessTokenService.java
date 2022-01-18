@@ -9,6 +9,7 @@ import com.zhonghang.baidu.netdisk.cp.config.BaiduConfig;
 import com.zhonghang.baidu.netdisk.cp.exception.AccessTokenException;
 import com.zhonghang.baidu.netdisk.cp.exception.NetDiskException;
 import com.zhonghang.baidu.netdisk.cp.response.AccessTokenVo;
+import com.zhonghang.baidu.netdisk.cp.response.OrganizationInfo;
 import com.zhonghang.baidu.netdisk.cp.storage.StorageDaoI;
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,12 +61,17 @@ public class AccessTokenService {
         AccessTokenVo accessTokenVo = result.toJavaObject(AccessTokenVo.class);
         //提前60秒刷新
         accessTokenVo.setExpiresSecond(DateUtil.currentSeconds() + accessTokenVo.getExpiresIn()-60);
-        storageDaoI.saveAccessToken(accessTokenVo,OrganizationInfoService.getOrganizationInfoByAccessToken(accessTokenVo).getCid());
+        OrganizationInfo organizationInfo = OrganizationInfoService.getOrganizationInfoByAccessToken(accessTokenVo);
+        storageDaoI.saveAccessToken(accessTokenVo, organizationInfo.getCid());
+        storageDaoI.saveOrganizationInfo(organizationInfo);
         return accessTokenVo;
     }
 
-    public AccessTokenVo getAccessToken(Long cid){
+    public AccessTokenVo getDefaultAccessToken(){
+        return getAccessToken(storageDaoI.getDefaultOrganizationInfo().getCid());
+    }
 
+    public AccessTokenVo getAccessToken(Long cid){
         AccessTokenVo at = storageDaoI.getAccessToken(cid);
         if(at == null){
             throw new NetDiskException("请先扫码授权后，再调用其他接口。");

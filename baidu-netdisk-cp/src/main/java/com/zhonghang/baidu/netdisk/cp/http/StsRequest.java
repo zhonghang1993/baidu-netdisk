@@ -4,6 +4,7 @@ import cn.hutool.http.HttpRequest;
 import com.alibaba.fastjson.JSONObject;
 import com.baidubce.internal.InternalRequest;
 import com.zhonghang.baidu.netdisk.cp.dto.RequestDto;
+import com.zhonghang.baidu.netdisk.cp.dto.RequestInfo;
 import com.zhonghang.baidu.netdisk.cp.dto.StsInfo;
 import com.zhonghang.baidu.netdisk.cp.exception.NetDiskException;
 import com.zhonghang.baidu.netdisk.cp.service.StsService;
@@ -28,6 +29,15 @@ public class StsRequest {
     }
     public  JSONObject requestBody(Map<String, String> param , String body, InternalRequest request,StsInfo stsInfo){
         return RequestUtil.request(param,body,request, stsInfo.getAccessKeyId(), stsInfo.getSecretAccessKey() ,true);
+    }
+
+    public RequestInfo getRequestInfo(Map<String, String> param , InternalRequest request,StsInfo stsInfo){
+        RequestDto requestDto = RequestUtil.addSign(param, request ,stsInfo.getAccessKeyId(), stsInfo.getSecretAccessKey() );
+        RequestInfo requestInfo = RequestInfo.builder().url(request.getUri().toString()).header(requestDto.getHeader()).build();
+        requestInfo.getHeader().put("Host","d.pcs.baidu.com");
+        requestInfo.setForm(param);
+        requestInfo.setMethod("POST");
+        return requestInfo;
     }
 
     public  JSONObject requestFile(Map<String, String> param , File file, InternalRequest request,StsInfo stsInfo){

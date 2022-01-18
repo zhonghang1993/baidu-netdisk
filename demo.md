@@ -3,7 +3,7 @@
 ```java
 @Component
 public class RedisStorage extends StorageDaoI {
-    @Value("{spring.profiles.active}")
+    @Value("{$spring.profiles.active}")
     private String profile; //多环境下存储的路径不一样，防止被覆盖，当然你也可以把它删了
     @Autowired
     private RedisTemplateUtil redisTemplateUtil; // 自己定义封装的对象，可以看下面的代码

@@ -7,11 +7,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.baidubce.http.HttpMethodName;
 import com.baidubce.internal.InternalRequest;
 import com.zhonghang.baidu.netdisk.cp.config.BaiduConfig;
-import com.zhonghang.baidu.netdisk.cp.dto.PreUploadDto;
-import com.zhonghang.baidu.netdisk.cp.dto.SliceCreateDto;
-import com.zhonghang.baidu.netdisk.cp.dto.SliceUploadDto;
-import com.zhonghang.baidu.netdisk.cp.dto.StsInfo;
+import com.zhonghang.baidu.netdisk.cp.dto.*;
 import com.zhonghang.baidu.netdisk.cp.http.StsRequest;
+import com.zhonghang.baidu.netdisk.cp.response.AccessTokenVo;
 import com.zhonghang.baidu.netdisk.cp.response.PreUploadResponse;
 import com.zhonghang.baidu.netdisk.cp.response.SliceCreateResponse;
 import com.zhonghang.baidu.netdisk.cp.util.FileSeparateUtil;
@@ -20,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,13 +40,7 @@ public class SuperFileService {
         this.accessTokenService = accessTokenService;
     }
 
-    /**
-     * @param localFilePath 本地上传的文件路径
-     * @param saveFilePath 云端文件路径
-     * @return 上传成功结果
-     */
-    public SliceCreateResponse upload(String localFilePath , String saveFilePath,Long cid) {
-
+    private SliceCreateResponse upload(String localFilePath , String saveFilePath,StsInfo stsInfo, AccessTokenVo accessTokenVo) {
         String cloudPath = URLUtil.encode(baiduConfig.getFilePrefix() + saveFilePath);
 
         //文件分片并获取md5值
@@ -71,7 +65,7 @@ public class SuperFileService {
                 .size(file.length())
                 .isDir(0)
                 .blockList(md5Array)
-                .build(),cid);
+                .build(),stsInfo);
 
         log.debug("预上传{}", preUploadResponse.getUploadid());
 
@@ -79,7 +73,7 @@ public class SuperFileService {
         upload(SliceUploadDto.builder()
                 .path(cloudPath)
                 .uploadid(preUploadResponse.getUploadid())
-                .build() , separate,cid);
+                .build() , separate,stsInfo,accessTokenVo);
 
         //创建文件
         SliceCreateResponse sliceCreateVo = create(SliceCreateDto.builder()
@@ -88,7 +82,7 @@ public class SuperFileService {
                 .isDir(0)
                 .uploadId(preUploadResponse.getUploadid())
                 .blockList(md5Array)
-                .build(),cid);
+                .build(),stsInfo);
         log.debug("创建文件{}", sliceCreateVo.getPath());
 
         //获取下载地址
@@ -98,13 +92,20 @@ public class SuperFileService {
         return sliceCreateVo;
     }
 
+    public SliceCreateResponse defaultUpload(String localFilePath , String saveFilePath) {
+        return upload(localFilePath,saveFilePath,stsService.getDefaultStsInfo(), accessTokenService.getDefaultAccessToken());
+    }
+
     /**
-     * 预上传请求参数
-     * @param preUploadDto 预上传请求参数
-     * @return PreUploadResponse
+     * @param localFilePath 本地上传的文件路径
+     * @param saveFilePath 云端文件路径
+     * @return 上传成功结果
      */
-    public PreUploadResponse preUpload(PreUploadDto preUploadDto,Long cid) {
-        StsInfo stsInfo = stsService.getStsInfo(cid);
+    public SliceCreateResponse upload(String localFilePath , String saveFilePath,Long cid) {
+        return upload(localFilePath,saveFilePath,stsService.getStsInfo(cid),accessTokenService.getAccessToken(cid));
+    }
+
+    public PreUploadResponse preUpload(PreUploadDto preUploadDto,StsInfo stsInfo){
         StringBuilder requestBody = new StringBuilder();
         requestBody.append("path=").append( URLUtil.encode(preUploadDto.getPath()) ).append( "&size=").append( preUploadDto.getSize())
                 .append("&rtype=").append(preUploadDto.getRType()).append("&autoinit=").append(preUploadDto.getAutoInit())
@@ -127,29 +128,81 @@ public class SuperFileService {
     }
 
     /**
+     * 预上传请求参数
+     * @param preUploadDto 预上传请求参数
+     * @return PreUploadResponse
+     */
+    public PreUploadResponse preUpload(PreUploadDto preUploadDto,Long cid) {
+        return preUpload(preUploadDto,stsService.getStsInfo(cid));
+    }
+
+    public PreUploadResponse defaultPreUpload(PreUploadDto preUploadDto) {
+        return preUpload(preUploadDto,stsService.getDefaultStsInfo());
+    }
+
+    /**
      *  分片上传
      * @param: uploadDto 分片上传请求参数
      * @param: files 文件
      */
     private void upload(SliceUploadDto uploadDto , File[] files,Long cid) {
         StsInfo stsInfo = stsService.getStsInfo(cid);
+        upload(uploadDto,files,stsInfo,accessTokenService.getAccessToken(cid));
+    }
+
+    private void upload(SliceUploadDto uploadDto , File[] files, StsInfo stsInfo , AccessTokenVo accessTokenVo) {
         for (int i = 0; i < files.length; i++) {
-            StringBuilder url = new StringBuilder();
-            url.append("https://d.pcs.baidu.com/rest/2.0/pcs/superfile2?method=upload")
-                    .append("&access_token=").append(accessTokenService.getAccessToken(cid).getAccessToken())
-                    .append("&type=").append(uploadDto.getType())
-                    .append("&partseq=" ).append( i )
-                    .append("&path=" ).append(uploadDto.getPath())
-                    .append("&uploadid=").append( uploadDto.getUploadid());
-            InternalRequest request = new InternalRequest(HttpMethodName.POST, URI.create(url.toString()));
+
+            InternalRequest request = new InternalRequest(HttpMethodName.POST, URI.create(getUploadUrl(uploadDto,i,accessTokenVo)));
             Map<String, String> param = HttpUtil.decodeParamMap(request.getUri().toString(),"utf-8");
             requestUtil.requestFile(param,files[i],request,stsInfo);
             log.debug("正在上传分片文件{}",  i);
         }
     }
 
-    public SliceCreateResponse create(SliceCreateDto sliceCreateDto ,Long cid) {
-        StsInfo stsInfo = stsService.getStsInfo(cid);
+    private String getUploadUrl(SliceUploadDto uploadDto ,int i ,AccessTokenVo accessTokenVo){
+        StringBuilder url = new StringBuilder();
+        url.append("https://d.pcs.baidu.com/rest/2.0/pcs/superfile2?method=upload")
+                .append("&access_token=").append(accessTokenVo.getAccessToken())
+                .append("&type=").append(uploadDto.getType())
+                .append("&partseq=" ).append( i )
+                .append("&path=" ).append(uploadDto.getPath())
+                .append("&uploadid=").append( uploadDto.getUploadid());
+        return url.toString();
+    }
+
+    public List<RequestInfo> uploadRequestInfo(SliceUploadDto uploadDto, int fileNum ,Long cid) {
+        return uploadRequestInfo(uploadDto,fileNum,stsService.getStsInfo(cid) , accessTokenService.getAccessToken(cid));
+    }
+
+    public List<RequestInfo> defaultUploadRequestInfo(SliceUploadDto uploadDto, int fileNum ) {
+        return uploadRequestInfo(uploadDto,fileNum,stsService.getDefaultStsInfo() , accessTokenService.getDefaultAccessToken());
+    }
+    /**
+     * 获取文件的上传地址
+     * @param uploadDto
+     * @param fileNum
+     * @return
+     */
+    public List<RequestInfo> uploadRequestInfo(SliceUploadDto uploadDto, int fileNum ,StsInfo stsInfo, AccessTokenVo accessTokenVo) {
+        List<RequestInfo> result = new ArrayList<>();
+        for (int i =0 ; i< fileNum ; i++) {
+            InternalRequest request = new InternalRequest(HttpMethodName.POST, URI.create(getUploadUrl(uploadDto,i , accessTokenVo)));
+            Map<String, String> param = HttpUtil.decodeParamMap(request.getUri().toString(),"utf-8");
+            result.add(requestUtil.getRequestInfo(param, request,stsInfo));
+        }
+        return result;
+    }
+
+    private void defaultUpload(SliceUploadDto uploadDto , File[] files){
+        upload(uploadDto,files,stsService.getDefaultStsInfo(),accessTokenService.getDefaultAccessToken());
+    }
+
+    public SliceCreateResponse defaultCreate(SliceCreateDto sliceCreateDto ) {
+        return create(sliceCreateDto,stsService.getDefaultStsInfo());
+    }
+
+    private SliceCreateResponse create(SliceCreateDto sliceCreateDto ,StsInfo stsInfo) {
         String url =  "https://pan.baidu.com/eopen/api/create?sts_token="+stsInfo.getSessionToken();
 
         InternalRequest request = new InternalRequest(HttpMethodName.POST, URI.create(url));
@@ -176,7 +229,11 @@ public class SuperFileService {
 
         Map<String, String> param = HttpUtil.decodeParamMap(request.getUri().toString(),"utf-8");
         return requestUtil.requestBody(param,requestBody.toString(),request,stsInfo).toJavaObject(SliceCreateResponse.class);
+    }
 
+    public SliceCreateResponse create(SliceCreateDto sliceCreateDto ,Long cid) {
+        StsInfo stsInfo = stsService.getStsInfo(cid);
+        return create(sliceCreateDto,stsInfo);
     }
 
 }

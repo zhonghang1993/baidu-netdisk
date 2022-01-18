@@ -29,6 +29,10 @@ public class StsService {
         this.baiduConfig = baiduConfig;
     }
 
+    public StsInfo getDefaultStsInfo(){
+        return getStsInfo(storageDaoI.getDefaultOrganizationInfo().getCid());
+    }
+
     public StsInfo getStsInfo(Long cid){
         StsInfo stsInfo = storageDaoI.getStsInfo(cid);
         //可能会过期？

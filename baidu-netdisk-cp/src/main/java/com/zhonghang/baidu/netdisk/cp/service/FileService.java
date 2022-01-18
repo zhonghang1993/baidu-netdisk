@@ -43,13 +43,27 @@ public class FileService {
     }
 
     /**
-     * 获取文件列表
+     * 获取文件列表 , 通过企业cid
      *
      * @param listFile 列表请求对象
      * @return 文件列表
      */
     public ListFileResponse listFile(ListFileRequest listFile,Long cid) {
         StsInfo stsInfo = stsService.getStsInfo(cid);
+        return listFile(listFile,stsInfo);
+    }
+
+    public ListFileResponse defaultListFile(ListFileRequest listFile){
+        return listFile(listFile,stsService.getDefaultStsInfo());
+    }
+
+    /**
+     * 通过指定的sts获取文件列表
+     * @param listFile 列表请求对象
+     * @param stsInfo 授权后的sts信息
+     * @return ListFileResponse
+     */
+    public ListFileResponse listFile(ListFileRequest listFile,StsInfo stsInfo) {
         StringBuilder sb = new StringBuilder();
         sb.append("method=list").append("&sts_token=").append(stsInfo.getSessionToken());
         sb.append(BeanUtil.appendString(listFile));
@@ -61,11 +75,22 @@ public class FileService {
     }
 
     /**
-     * 管理文件，移动，重命名，删除
+     * 管理文件，移动，重命名，删除 - 管理默认的网盘
+     * @param managerFileRequest
+     */
+    public void defaultManagerFile(ManagerFileRequest managerFileRequest){
+        managerFile(managerFileRequest,stsService.getDefaultStsInfo());
+    }
+
+    /**
+     * 管理文件，移动，重命名，删除 - 指定的企业网盘
      * @param managerFileRequest 请求对象
      */
     public void managerFile(ManagerFileRequest managerFileRequest,Long cid){
-        StsInfo stsInfo = stsService.getStsInfo(cid);
+        managerFile(managerFileRequest,stsService.getStsInfo(cid));
+    }
+
+    public void managerFile(ManagerFileRequest managerFileRequest,StsInfo stsInfo){
         String requestBody = "filelist="+managerFileRequest.getFilelist().toJSONString();
         if(managerFileRequest.getAsync() != null){
             requestBody +="&async="+managerFileRequest.getAsync();
@@ -86,22 +111,34 @@ public class FileService {
      * @param fid 文件fid
      */
     public void download(String saveFilePath ,Long cid,String... fid){
-        StsInfo stsInfo = stsService.getStsInfo(cid);
+        download(saveFilePath,stsService.getStsInfo(cid),fid);
+    }
+
+    public void download(String saveFilePath ,StsInfo stsInfo,String... fid){
         //获取文件信息的dlink
-        List<FileInfoResponse> fileInfo = fileInfo(cid,fid);
+        List<FileInfoResponse> fileInfo = fileInfo(stsInfo,fid);
         for (int i = 0; i < fileInfo.size(); i++) {
-
             String dlink = fileInfo.get(i).getDlink()+"&sts_token="+stsInfo.getSessionToken();
-
             InternalRequest request = new InternalRequest(HttpMethodName.GET, URI.create(dlink));
             Map<String, String> param =  HttpUtil.decodeParamMap(dlink,"utf-8");
             requestUtil.requestDownload(param,request ,saveFilePath + "//"+ fileInfo.get(i).getServer_filename(),stsInfo);
         }
+    }
 
+    public void defaultDownload(String saveFilePath ,String... fid){
+        download(saveFilePath,stsService.getDefaultStsInfo(),fid);
     }
 
     public List<FileInfoResponse> fileInfo(Long cid,String... fid){
         return fileInfo(FileInfoRequest.builder().dlink(1).needmedia(1).fsids(JSONArray.parseArray(JSONArray.toJSONString(fid))).build(),cid);
+    }
+
+    public List<FileInfoResponse> fileInfo(StsInfo stsInfo,String... fid){
+        return fileInfo(FileInfoRequest.builder().dlink(1).needmedia(1).fsids(JSONArray.parseArray(JSONArray.toJSONString(fid))).build(),stsInfo);
+    }
+
+    public List<FileInfoResponse> defaultFileInfo(String... fid){
+        return defaultFileInfo(FileInfoRequest.builder().dlink(1).needmedia(1).fsids(JSONArray.parseArray(JSONArray.toJSONString(fid))).build());
     }
 
     /**
@@ -110,8 +147,10 @@ public class FileService {
      * @return 多个文件返回
      */
     public List<FileInfoResponse> fileInfo(FileInfoRequest fileInfoRequest,Long cid){
-        StsInfo stsInfo = stsService.getStsInfo(cid);
+        return fileInfo(fileInfoRequest,stsService.getStsInfo(cid));
+    }
 
+    public List<FileInfoResponse> fileInfo(FileInfoRequest fileInfoRequest,StsInfo stsInfo){
         InternalRequest request = new InternalRequest(HttpMethodName.GET, URI.create( "https://pan.baidu.com/eopen/api/filemetas"));
         Map<String, String> param = BeanUtil.covBean(fileInfoRequest);
         param.put("method", "filemetas");
@@ -121,18 +160,27 @@ public class FileService {
         return result.getJSONArray("info").toJavaList(FileInfoResponse.class);
     }
 
+    public List<FileInfoResponse> defaultFileInfo(FileInfoRequest fileInfoRequest){
+        return fileInfo(fileInfoRequest,stsService.getDefaultStsInfo());
+    }
+
     /**
      * 文件的预签名链接
      * @param dLinkDto 下载请求参数
      * @return 下载返回信息
      */
     public List<DLinkResponse> dLink(DLinkDto dLinkDto,Long cid){
-        StsInfo stsInfo = stsService.getStsInfo(cid);
-        InternalRequest request = new InternalRequest(HttpMethodName.POST, URI.create( "https://pan.baidu.com/eopen/api/exdownload?sts_token="+ stsService.getStsInfo(cid).getSessionToken()));
+        return dLink(dLinkDto,stsService.getStsInfo(cid));
+    }
+
+    public List<DLinkResponse> defaultDLink(DLinkDto dLinkDto){
+        return dLink(dLinkDto,stsService.getDefaultStsInfo());
+    }
+
+    public List<DLinkResponse> dLink(DLinkDto dLinkDto,StsInfo stsInfo){
+        InternalRequest request = new InternalRequest(HttpMethodName.POST, URI.create( "https://pan.baidu.com/eopen/api/exdownload?sts_token="+ stsInfo.getSessionToken()));
         Map<String, String> param = HttpUtil.decodeParamMap(request.getUri().toString(),"utf-8");
-
         String body = "filelist="+JSONArray.toJSONString(dLinkDto.getFilelist());
-
         JSONObject result = requestUtil.requestBody(param,body,request,stsInfo);
         return result.getJSONArray("data").toJavaList(DLinkResponse.class);
     }

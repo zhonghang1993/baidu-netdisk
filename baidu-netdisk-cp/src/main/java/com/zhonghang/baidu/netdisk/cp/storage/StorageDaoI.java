@@ -24,12 +24,6 @@ public abstract class StorageDaoI {
     public abstract AccessTokenVo getAccessToken(Long cid);
 
     /**
-     * 获取默认的 AccessToken 【如果你的业务场景只管理一个网盘，可以使用这个】
-     * @return AccessTokenVo
-     */
-    public abstract AccessTokenVo getDefaultAccessToken();
-
-    /**
      * 保存企业信息
      * @param organizationInfo 企业信息
      */
@@ -43,7 +37,7 @@ public abstract class StorageDaoI {
     public abstract OrganizationInfo getOrganizationInfo(Long cid);
 
     /**
-     * 获取默认的企业信息
+     * 获取默认的存储网盘，获取默认的企业信息
      * @return OrganizationInfo
      */
     public abstract OrganizationInfo getDefaultOrganizationInfo();
@@ -61,11 +55,6 @@ public abstract class StorageDaoI {
      * @return StsInfo
      */
     public abstract StsInfo getStsInfo(Long cid);
-    /**
-     * 获取默认的企业sts信息
-     * @return StsInfo
-     */
-    public abstract StsInfo getDefaultStsInfo();
 
     /**
      * 解绑，清空AccessToken、stsInfo、organizationInfo信息

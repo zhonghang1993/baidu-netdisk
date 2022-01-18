@@ -26,6 +26,9 @@ public class OrganizationInfoService {
         this.storageDaoI = storageDaoI;
     }
 
+    public OrganizationInfo getDefaultOrganizationInfo(){
+        return storageDaoI.getDefaultOrganizationInfo();
+    }
     /**
      * 获取企业信息
      * @return OrganizationInfo
