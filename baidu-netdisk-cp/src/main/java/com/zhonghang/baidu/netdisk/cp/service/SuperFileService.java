@@ -121,7 +121,7 @@ public class SuperFileService {
         if(StrUtil.isNotBlank(preUploadDto.getLocalMtime()))
             requestBody.append("&local_mtime").append(preUploadDto.getLocalMtime());
 
-        InternalRequest request = new InternalRequest(HttpMethodName.POST, URI.create( "https://pan.baidu.com/eopen/api/precreate?sts_token="+stsInfo.getSessionToken()));
+        InternalRequest request = new InternalRequest(HttpMethodName.GET, URI.create( "https://pan.baidu.com/eopen/api/precreate?sts_token="+stsInfo.getSessionToken()));
         Map<String, String> param = HttpUtil.decodeParamMap(request.getUri().toString(),"utf-8");
 
         return requestUtil.requestBody(param,requestBody.toString(),request,stsInfo).toJavaObject(PreUploadResponse.class);
