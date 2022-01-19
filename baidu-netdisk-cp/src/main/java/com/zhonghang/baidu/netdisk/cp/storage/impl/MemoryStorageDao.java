@@ -39,7 +39,7 @@ public class MemoryStorageDao extends StorageDaoI {
     @Override
     public OrganizationInfo getDefaultOrganizationInfo() {
         if(organizationInfos.size() > 1){
-            throw new NetDiskException("存在管理多个网盘情况，请重写重写默认存储规则。或者使用cid模式对网盘进行管理");
+            throw new NetDiskException("存在管理多个网盘情况，请重写默认存储规则。或者使用cid模式对网盘进行管理");
         }
         //默认取第一个
         return (OrganizationInfo) organizationInfos.values().toArray()[0];
