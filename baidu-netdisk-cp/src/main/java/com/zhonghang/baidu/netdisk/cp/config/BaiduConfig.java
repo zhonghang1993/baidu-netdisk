@@ -16,7 +16,7 @@ public class BaiduConfig {
     private String appName ;
     private String appKey ;
     private String secretKey ;
-    private String singKey ;
+    private String signKey ;
 
     private String redirectUri;
 

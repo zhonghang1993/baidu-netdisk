@@ -1,20 +1,58 @@
 # 百度企业网盘sdk
 
 ### 前言
-百度网盘开放平台接口没有任何语言的SDK，只有赤裸裸的API。
-- 百度网盘文档写的不清晰，对接只能靠猜？
-- 接口总是调不通，不知道问题在哪里，写了反馈，几个月了没音信？
-- 某些参数文档写的明明不是必传，但是不传它就是不通？
-- 接口返回的错误参数看不懂，有时直接给你来500？
-- ...
-
-作为码农是不是很难受？不要气馁，因为并不是你的问题，而是百度文档和接口写的真的是一言难尽！
-
-收！气了发了，活还是要干的。本人能力有限，如果在使用SDK中发现问题，或不满足你们公司某些业务场景，请在github中写`Issues` ，我会第一时间收到，并思考解决方案。带来不便敬请谅解！
+- 支持多个企业网盘同时管理
 
 ## 一、使用例子
 
-### 1-1 引入依赖
+- 例子1：Spring boot项目【推荐】
+- 例子2：spring项目
+
+### 1-1 Spring boot项目
+1-1-1 引入spring boot自动装配依赖
+
+```xml
+<dependency>
+    <groupId>io.github.zhonghang1993</groupId>
+    <artifactId>baidu-netdisk-cp-spring-boot-start</artifactId>
+    <version>1.5.0</version>
+</dependency>
+```
+
+1-1-2 配置文件
+```properties
+# appId
+baidu.netdisk.cp.net.disk.app-id=
+# appName
+baidu.netdisk.cp.net.disk.app-name=
+# appKey
+baidu.netdisk.cp.net.disk.app-key=
+# secretKey
+baidu.netdisk.cp.net.disk.secret-key=
+# signKey
+baidu.netdisk.cp.net.disk.sign-key=
+# 授权回调地址
+baidu.netdisk.cp.net.disk.redirect-uri=
+#【重点】如果不配置，则默认存储在内存中。配置实现StorageDaoI接口的类全量路径名；查看下文《元数据存储扩展性》
+baidu.netdisk.cp.net.disk.storage-rule=com.XX.XX.XX.service.impl.RedisStorage
+
+# 上传文件的路径前缀
+baidu.netdisk.cp.net.disk.file-prefix=/bbs
+# 分片大小（单位M），最大限制：普通用户4M，普通会员16M，超级会员32M
+baidu.netdisk.cp.net.disk.unit=32
+
+```
+
+#### 1-1-3 使用
+
+```java
+@Autowired
+private BaiduNetDisk baiduNetDisk;
+```
+
+### 1-2 Spring 项目(ssm、ssh)
+
+#### 1-2-1 引入依赖
 
 ```xml
 <dependency>
@@ -24,7 +62,7 @@
 </dependency>
 ```
 
-### 1-2 构建
+#### 1-2-2 构建
 
 ```java
 BaiduConfig baiduConfig = new BaiduConfig(appId,appName,appKey,secretKey,singKey,redirectUri,filePrefix,unit);
@@ -33,7 +71,9 @@ BaiduNetDisk baiduNetDisk = new BaiduNetDisk(baiduConfig);
 //BaiduNetDisk baiduNetDisk = new BaiduNetDisk(baiduConfig,storageDaoI);
 ```
 
-### 1-3 调用说明
+## 二、 调用说明
+
+### 2-1 service说明
 
 ```java
 //获取accessToken的类，获取二维码扫码地址、通过code鉴权
@@ -49,7 +89,18 @@ baiduNetDisk.getOrganizationInfoService();
 baiduNetDisk.getStsService();
 ```
 
-## 二、元数据存储扩展性
+### 2-2 单网盘管理，多网盘管理说明
+
+- 管理单个用户网盘，使用default开头的
+  - baiduNetDisk.getAccessTokenService().default***();
+  - baiduNetDisk.getFileService().default***();
+- 管理多个用户的网盘，则使用
+  - baiduNetDisk.getFileService().\***(\*** ,Long cid);
+
+<font style="color:red">**cid是什么？cid每个授权用户的网盘唯一ID，在获取公司信息中有。**</font>所以每次操作传cid即可
+
+
+## 三、元数据存储扩展性
 - 目前SDK给的默认规则是存储在内存中的，所以不建议生产使用
 - 想把token存储在内存、存储在文件、存储在redis、存储数据库......？
 
@@ -70,7 +121,8 @@ baiduNetDisk.getStsService();
 ### 3-2 【解绑】如何清空授权信息？
 
 ```java
-storageDaoI.clear();
+//清除指定企业网盘
+storageDaoI.clear(Long cid);
 ```
 如果你觉得直接设置null无法处理你的业务场景，可以重写clear方法。
 

@@ -42,7 +42,7 @@ public class AccessTokenService {
      * @throws AccessTokenException 验证异常
      */
     public synchronized AccessTokenVo generateAccessToken(String code) throws AccessTokenException {
-        if(StrUtil.isBlankIfStr(code)){
+        if(StrUtil.isBlank(code)){
             throw new AccessTokenException("code为空，处理失败");
         }
         //grant_type=authorization_code&code=CODE&client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&redirect_uri=YOUR_REGISTERED_REDIRECT_URI

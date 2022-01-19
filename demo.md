@@ -9,47 +9,64 @@ public class RedisStorage extends StorageDaoI {
     private RedisTemplateUtil redisTemplateUtil; // 自己定义封装的对象，可以看下面的代码
 
     private static String prefix = "baidu.net.disk"; //redis的key的前缀
-    private String getAccessTokenKey(){
-        return profile+"."+prefix+".accessToken"; //拼接得到key
+    private String getAccessTokenKey(Long cid){
+        return profile+"."+prefix+".accessToken."+cid;
     }
 
-    private String getOrganizationInfoKey(){ //拼接得到key
-        return profile+"."+prefix+".orgInfo";
+    private String getAllOrganizationInfoKey(){
+        return profile+"."+prefix+".orgInfo.*";
     }
 
-    private String getStsInfoKey(){ //拼接得到key
-        return profile+"."+prefix+".stsInfo";
+    private String getOrganizationInfoKey(Long cid){
+        return profile+"."+prefix+".orgInfo."+cid;
     }
-    
-    //实现存储和获取值的方法
-    @Override
-    public void saveAccessToken(AccessTokenVo accessTokenVo) {
-        redisTemplateUtil.setValue(getAccessTokenKey(), JSONObject.toJSONString(accessTokenVo));
+
+    private String getStsInfoKey(Long cid){
+        return profile+"."+prefix+".stsInfo."+cid;
     }
 
     @Override
-    public AccessTokenVo getAccessToken() {
-        return redisTemplateUtil.getKey(getAccessTokenKey(),AccessTokenVo.class);
+    public void saveAccessToken(AccessTokenVo accessTokenVo, Long cid) {
+        redisTemplateUtil.setValue(getAccessTokenKey(cid), JSONObject.toJSONString(accessTokenVo));
+    }
+
+    @Override
+    public AccessTokenVo getAccessToken(Long cid) {
+        return redisTemplateUtil.getKey(getAccessTokenKey(cid),AccessTokenVo.class);
     }
 
     @Override
     public void saveOrganizationInfo(OrganizationInfo organizationInfo) {
-        redisTemplateUtil.setValue(getOrganizationInfoKey(), JSONObject.toJSONString(organizationInfo));
+        redisTemplateUtil.setValue(getOrganizationInfoKey(organizationInfo.getCid()), JSONObject.toJSONString(organizationInfo));
     }
 
     @Override
-    public OrganizationInfo getOrganizationInfo() {
-        return redisTemplateUtil.getKey(getOrganizationInfoKey(),OrganizationInfo.class);
+    public OrganizationInfo getOrganizationInfo(Long cid) {
+        return redisTemplateUtil.getKey(getOrganizationInfoKey(cid),OrganizationInfo.class);
+    }
+
+    /**
+     * 设置默认存储的规则，存储到默认的网盘
+     * @return
+     */
+    @Override
+    public OrganizationInfo getDefaultOrganizationInfo() {
+        Set<String> keys = redisTemplateUtil.getKeys(getAllOrganizationInfoKey());
+        if(keys.size() > 1){
+            throw new NetDiskException("超过了1个百度授权账号，请配置多个策略");
+        }
+        OrganizationInfo organizationInfo = redisTemplateUtil.getKey((String) keys.toArray()[0], OrganizationInfo.class);
+        return organizationInfo;
     }
 
     @Override
-    public void saveStsInfo(StsInfo stsInfo) {
-        redisTemplateUtil.setValue(getStsInfoKey(), JSONObject.toJSONString(stsInfo));
+    public void saveStsInfo(StsInfo stsInfo, Long cid) {
+        redisTemplateUtil.setValue(getStsInfoKey(cid), JSONObject.toJSONString(stsInfo));
     }
 
     @Override
-    public StsInfo getStsInfo() {
-        return redisTemplateUtil.getKey(getStsInfoKey(),StsInfo.class);
+    public StsInfo getStsInfo(Long cid) {
+        return redisTemplateUtil.getKey(getStsInfoKey(cid),StsInfo.class);
     }
 }
 
