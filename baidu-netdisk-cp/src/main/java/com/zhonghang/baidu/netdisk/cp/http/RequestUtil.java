@@ -14,11 +14,13 @@ import com.baidubce.internal.InternalRequest;
 import com.baidubce.util.DateUtils;
 import com.zhonghang.baidu.netdisk.cp.dto.RequestDto;
 import com.zhonghang.baidu.netdisk.cp.exception.NetDiskException;
+import com.zhonghang.baidu.netdisk.cp.service.DownLoadCallbackI;
 import com.zhonghang.baidu.netdisk.cp.signer.AdmsBceV1Signer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by zhonghang  2022/1/5.
@@ -73,7 +75,15 @@ public class RequestUtil {
         return request(requestDto.getParam(),requestDto.getHeader() , requestBody , request , body ,getForm);
     }
 
-    public static void download(String url,Map<String,String> header ,String saveFilePath){
+    public static void download(String url,Map<String,String> header ,String saveFilePath ){
+        download(url, header, saveFilePath, (realFilePath, saveFilePath1) -> {
+            Map<String,String> header1 = new HashMap<>();
+            header1.put("User-Agent","pan.baidu.com"); //必须加头部，否则50M以上的文件不能下载
+            download(realFilePath , header1, saveFilePath1);
+        });
+    }
+
+    public static void download(String url, Map<String,String> header , String saveFilePath, DownLoadCallbackI downLoadCallbackI){
         HttpRequest httpRequest = HttpRequest.get(url)
                 .addHeaders(header)
                 .timeout(20000);//超时，毫秒
@@ -83,13 +93,19 @@ public class RequestUtil {
             response.writeBody(outFile, null);
         }else if(response.getStatus() == 302){
             log.debug("302重定向：{}" , response.header("Location"));
-            Map<String,String> header1 = new HashMap<>();
-            header1.put("User-Agent","pan.baidu.com"); //必须加头部，否则50M以上的文件不能下载
-            download(response.header("Location") , header1 , saveFilePath);
+            downLoadCallbackI.callback(response.header("Location"), saveFilePath);
         }else{
             log.error("下载出错；状态码：{}，错误信息：{}" ,response.getStatus(), JSONArray.parseObject(response.body()));
             throw new NetDiskException("文件下载出错：状态码："+response.getStatus()+"，错误信息："+response.body());
         }
+    }
+
+    public static String downloadRealPath(String url,Map<String,String> header){
+        AtomicReference<String> result = new AtomicReference<>();
+        download(url, header, null, (realFilePath, saveFilePath1) -> {
+            result.set(realFilePath);
+        });
+        return result.get();
     }
 
     private static JSONObject formatResult(String response){
@@ -117,7 +133,7 @@ public class RequestUtil {
 //        requestHeader.put("Host" , "pan.baidu.com");
         requestHeader.put("x-bce-date", time);
         String t = DateUtils.formatAlternateIso8601Date(now);
-        System.out.println(t);
+//        System.out.println(t);
         request.setHeaders(requestHeader);
         request.setParameters(param);
 

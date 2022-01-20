@@ -15,6 +15,7 @@ import com.zhonghang.baidu.netdisk.cp.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -110,11 +111,11 @@ public class FileService {
      * @param saveFilePath 下载存储地址
      * @param fid 文件fid
      */
-    public void download(String saveFilePath ,Long cid,String... fid){
+    public void download(String saveFilePath ,Long cid,List<String> fid){
         download(saveFilePath,stsService.getStsInfo(cid),fid);
     }
 
-    public void download(String saveFilePath ,StsInfo stsInfo,String... fid){
+    private void download(String saveFilePath ,StsInfo stsInfo,List<String> fid){
         //获取文件信息的dlink
         List<FileInfoResponse> fileInfo = fileInfo(stsInfo,fid);
         for (int i = 0; i < fileInfo.size(); i++) {
@@ -125,19 +126,60 @@ public class FileService {
         }
     }
 
-    public void defaultDownload(String saveFilePath ,String... fid){
+    public void defaultDownload(String saveFilePath ,List<String> fid){
         download(saveFilePath,stsService.getDefaultStsInfo(),fid);
     }
 
-    public List<FileInfoResponse> fileInfo(Long cid,String... fid){
+    public void defaultDownload(String saveFilePath ,String fid){
+        List<String> fids = new ArrayList<>();
+        fids.add(fid);
+        download(saveFilePath,stsService.getDefaultStsInfo(),fids);
+    }
+
+    /**
+     * 获取真实的下载地址，请求时需要在header设置User-Agent = pan.baidu.com
+     * @param cid 网盘空间id
+     * @param fid 文件fid
+     * @return
+     */
+    public String downloadRealPath(Long cid,String fid){
+        return downloadRealPath(stsService.getStsInfo(cid),fid);
+    }
+
+    /**
+     * 获取真实的下载地址，请求时需要在header设置User-Agent = pan.baidu.com
+     * @param fid 文件fid
+     * @return
+     */
+    public String defaultDownloadRealPath(String fid){
+        return downloadRealPath(stsService.getDefaultStsInfo(),fid);
+    }
+
+    private String downloadRealPath(StsInfo stsInfo,String fid){
+        FileInfoResponse fileInfo = fileInfo(stsInfo,fid);
+        String dlink = fileInfo.getDlink()+"&sts_token="+stsInfo.getSessionToken();
+        InternalRequest request = new InternalRequest(HttpMethodName.GET, URI.create(dlink));
+        Map<String, String> param =  HttpUtil.decodeParamMap(dlink,"utf-8");
+        return requestUtil.requestDownloadRealPath(param,request ,stsInfo);
+    }
+
+
+
+    public List<FileInfoResponse> fileInfo(Long cid,List<String> fid){
         return fileInfo(FileInfoRequest.builder().dlink(1).needmedia(1).fsids(JSONArray.parseArray(JSONArray.toJSONString(fid))).build(),cid);
     }
 
-    public List<FileInfoResponse> fileInfo(StsInfo stsInfo,String... fid){
+    public List<FileInfoResponse> fileInfo(StsInfo stsInfo,List<String> fid){
         return fileInfo(FileInfoRequest.builder().dlink(1).needmedia(1).fsids(JSONArray.parseArray(JSONArray.toJSONString(fid))).build(),stsInfo);
     }
 
-    public List<FileInfoResponse> defaultFileInfo(String... fid){
+    public FileInfoResponse fileInfo(StsInfo stsInfo,String fid){
+        List<String> fids = new ArrayList<>();
+        fids.add(fid);
+        return fileInfo(stsInfo,fids).get(0);
+    }
+
+    public List<FileInfoResponse> defaultFileInfo(List<String> fid){
         return defaultFileInfo(FileInfoRequest.builder().dlink(1).needmedia(1).fsids(JSONArray.parseArray(JSONArray.toJSONString(fid))).build());
     }
 

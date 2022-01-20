@@ -15,7 +15,7 @@
 <dependency>
     <groupId>io.github.zhonghang1993</groupId>
     <artifactId>baidu-netdisk-cp-spring-boot-start</artifactId>
-    <version>1.5.0</version>
+    <version>1.6.1</version>
 </dependency>
 ```
 
@@ -58,7 +58,7 @@ private BaiduNetDisk baiduNetDisk;
 <dependency>
     <groupId>io.github.zhonghang1993</groupId>
     <artifactId>baidu-netdisk</artifactId>
-    <version>1.0.0</version>
+    <version>1.5.0</version>
 </dependency>
 ```
 
@@ -106,19 +106,19 @@ baiduNetDisk.getStsService();
 
 ` 实现抽象类 StorageDaoI 即可`
 
-### 2-1 示例：使用redis存储
+### 3-1 示例：使用redis存储
 
 [请点击看模块中demo示例](demo.md)
 
 - 分布式系统、或者集群建议存储在redis中
 
-## 三、常见问题
+## 四、常见问题
 
-### 3-1 如何同时管理多个用户的授权空间？
+### 4-1 如何同时管理多个用户的授权空间？
 
 目前你就new多个BaiduNetDisk，虽然不优雅，但是可以解决问题。 ~~正在重构中~~
 
-### 3-2 【解绑】如何清空授权信息？
+### 4-2 【解绑】如何清空授权信息？
 
 ```java
 //清除指定企业网盘
@@ -126,7 +126,7 @@ storageDaoI.clear(Long cid);
 ```
 如果你觉得直接设置null无法处理你的业务场景，可以重写clear方法。
 
-### 3-3 怎么显示打印日志？
+### 4-3 怎么显示打印日志？
 
 在你的日志配置文件，扫描路径加上`com.zhonghang.baidu`就可以了
 
@@ -135,7 +135,7 @@ storageDaoI.clear(Long cid);
 <logger name="com.zhonghang.baidu" level="DEBUG"/>
 ```
 
-## 四、加群
+## 五、加群
 
 - 点击链接加入群聊【百度企业网盘SDK】：https://jq.qq.com/?_wv=1027&k=r6RmOwvn
 - 群号：897493498

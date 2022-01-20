@@ -68,18 +68,14 @@ public class StsRequest {
     public  void requestDownload(Map<String, String> param, InternalRequest request , String saveFilePath,StsInfo stsInfo) {
         RequestDto requestDto = RequestUtil.addSign(param, request ,stsInfo.getAccessKeyId(),stsInfo.getSecretAccessKey());
         requestDto.getHeader().put("User-Agent","pan.baidu.com");
-
-//        requestDto.getHeader().remove("Host");
-//        File saveFile = new File(saveFilePath);
-
-        System.out.println(request.getUri().toString().split("\\?")[0]);
-        System.out.println(request.getUri().toString());
-
-//        download(request.getUri().toString() ,null,requestDto.getHeader() , saveFilePath);
         RequestUtil.download(request.getUri().toString() ,requestDto.getHeader() , saveFilePath);
-
     }
 
+    public String requestDownloadRealPath(Map<String, String> param, InternalRequest request ,StsInfo stsInfo) {
+        RequestDto requestDto = RequestUtil.addSign(param, request ,stsInfo.getAccessKeyId(),stsInfo.getSecretAccessKey());
+        requestDto.getHeader().put("User-Agent","pan.baidu.com");
+        return RequestUtil.downloadRealPath(request.getUri().toString() ,requestDto.getHeader());
+    }
 
 
 
