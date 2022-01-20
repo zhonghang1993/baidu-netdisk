@@ -99,6 +99,7 @@ public class SuperFileService {
     /**
      * @param localFilePath 本地上传的文件路径
      * @param saveFilePath 云端文件路径
+     * @param cid 企业空间id
      * @return 上传成功结果
      */
     public SliceCreateResponse upload(String localFilePath , String saveFilePath,Long cid) {
@@ -130,6 +131,7 @@ public class SuperFileService {
     /**
      * 预上传请求参数
      * @param preUploadDto 预上传请求参数
+     * @param cid 企业空间id
      * @return PreUploadResponse
      */
     public PreUploadResponse preUpload(PreUploadDto preUploadDto,Long cid) {
@@ -142,8 +144,9 @@ public class SuperFileService {
 
     /**
      *  分片上传
-     * @param: uploadDto 分片上传请求参数
-     * @param: files 文件
+     * @param uploadDto 分片上传请求参数
+     * @param files 文件
+     * @param cid 企业空间id
      */
     private void upload(SliceUploadDto uploadDto , File[] files,Long cid) {
         StsInfo stsInfo = stsService.getStsInfo(cid);
@@ -178,13 +181,16 @@ public class SuperFileService {
     public List<RequestInfo> defaultUploadRequestInfo(SliceUploadDto uploadDto, int fileNum ) {
         return uploadRequestInfo(uploadDto,fileNum,stsService.getDefaultStsInfo() , accessTokenService.getDefaultAccessToken());
     }
+
     /**
      * 获取文件的上传地址
-     * @param uploadDto
-     * @param fileNum
-     * @return
+     * @param uploadDto 分片上传对象
+     * @param fileNum 分片文件数
+     * @param stsInfo sts信息
+     * @param accessTokenVo ac
+     * @return List<RequestInfo>
      */
-    public List<RequestInfo> uploadRequestInfo(SliceUploadDto uploadDto, int fileNum ,StsInfo stsInfo, AccessTokenVo accessTokenVo) {
+    private List<RequestInfo> uploadRequestInfo(SliceUploadDto uploadDto, int fileNum ,StsInfo stsInfo, AccessTokenVo accessTokenVo) {
         List<RequestInfo> result = new ArrayList<>();
         for (int i =0 ; i< fileNum ; i++) {
             InternalRequest request = new InternalRequest(HttpMethodName.POST, URI.create(getUploadUrl(uploadDto,i , accessTokenVo)));

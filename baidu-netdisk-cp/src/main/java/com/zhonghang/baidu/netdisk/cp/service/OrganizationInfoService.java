@@ -31,6 +31,7 @@ public class OrganizationInfoService {
     }
     /**
      * 获取企业信息
+     * @param cid 企业空间id
      * @return OrganizationInfo
      */
     public OrganizationInfo getOrganizationInfo(Long cid){

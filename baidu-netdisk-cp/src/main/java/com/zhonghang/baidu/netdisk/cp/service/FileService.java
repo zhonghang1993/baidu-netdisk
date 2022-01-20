@@ -47,6 +47,7 @@ public class FileService {
      * 获取文件列表 , 通过企业cid
      *
      * @param listFile 列表请求对象
+     * @param cid 企业空间id
      * @return 文件列表
      */
     public ListFileResponse listFile(ListFileRequest listFile,Long cid) {
@@ -77,7 +78,7 @@ public class FileService {
 
     /**
      * 管理文件，移动，重命名，删除 - 管理默认的网盘
-     * @param managerFileRequest
+     * @param managerFileRequest 管理文件请求对象
      */
     public void defaultManagerFile(ManagerFileRequest managerFileRequest){
         managerFile(managerFileRequest,stsService.getDefaultStsInfo());
@@ -86,6 +87,7 @@ public class FileService {
     /**
      * 管理文件，移动，重命名，删除 - 指定的企业网盘
      * @param managerFileRequest 请求对象
+     * @param cid 企业空间id
      */
     public void managerFile(ManagerFileRequest managerFileRequest,Long cid){
         managerFile(managerFileRequest,stsService.getStsInfo(cid));
@@ -109,6 +111,7 @@ public class FileService {
     /**
      * 下载文件
      * @param saveFilePath 下载存储地址
+     * @param cid 企业空间id
      * @param fid 文件fid
      */
     public void download(String saveFilePath ,Long cid,List<String> fid){
@@ -140,7 +143,7 @@ public class FileService {
      * 获取真实的下载地址，请求时需要在header设置User-Agent = pan.baidu.com
      * @param cid 网盘空间id
      * @param fid 文件fid
-     * @return
+     * @return String
      */
     public String downloadRealPath(Long cid,String fid){
         return downloadRealPath(stsService.getStsInfo(cid),fid);
@@ -149,7 +152,7 @@ public class FileService {
     /**
      * 获取真实的下载地址，请求时需要在header设置User-Agent = pan.baidu.com
      * @param fid 文件fid
-     * @return
+     * @return String
      */
     public String defaultDownloadRealPath(String fid){
         return downloadRealPath(stsService.getDefaultStsInfo(),fid);
@@ -186,6 +189,7 @@ public class FileService {
     /**
      * 获取文件信息
      * @param fileInfoRequest 文件请求
+     * @param cid 网盘空间id
      * @return 多个文件返回
      */
     public List<FileInfoResponse> fileInfo(FileInfoRequest fileInfoRequest,Long cid){
@@ -209,6 +213,7 @@ public class FileService {
     /**
      * 文件的预签名链接
      * @param dLinkDto 下载请求参数
+     * @param cid 网盘空间id
      * @return 下载返回信息
      */
     public List<DLinkResponse> dLink(DLinkDto dLinkDto,Long cid){

@@ -45,19 +45,20 @@ public abstract class StorageDaoI {
     /**
      * 保存sts信息
      * @param stsInfo sts信息
-     * @param cid 企业id
+     * @param cid 企业空间id
      */
     public abstract void saveStsInfo(StsInfo stsInfo, Long cid);
 
     /**
      * 获取指定企业的sts信息
-     * @param cid
+     * @param cid 企业空间id
      * @return StsInfo
      */
     public abstract StsInfo getStsInfo(Long cid);
 
     /**
      * 解绑，清空AccessToken、stsInfo、organizationInfo信息
+     * @param cid 企业空间id
      */
     public void clear(Long cid){
         saveAccessToken(null,cid);
