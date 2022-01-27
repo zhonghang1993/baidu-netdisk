@@ -65,7 +65,7 @@ public class StsService {
         InternalRequest request = new InternalRequest(HttpMethodName.GET, URI.create("https://pan.baidu.com/eopen/api/sts/sessiontoken?"+paramStr));
         Map<String, String> param =  HttpUtil.decodeParamMap(request.getUri().toString(),"utf-8");
         StsInfo stsInfo = RequestUtil.request(param, request , baiduConfig.getAppKey(), baiduConfig.getSecretKey()).getJSONObject("data").toJavaObject(StsInfo.class);
-        stsInfo.setExpirationSecond(DateUtil.parse(stsInfo.getExpiration()).second() - 60);//提前60秒过期
+        stsInfo.setExpirationSecond(DateUtil.parse(stsInfo.getExpiration()).getTime()/1000 - 60);//提前60秒过期
         return stsInfo;
     }
 
