@@ -5,12 +5,12 @@
     <parent>
         <artifactId>baidu-netdisk</artifactId>
         <groupId>io.github.zhonghang1993</groupId>
-        <version>1.6.1</version>
+        <version>${baidu-netdisk.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>baidu-netdisk-cp</artifactId>
-    <version>1.6.1</version>
+    <version>${baidu-netdisk-cp.version}</version>
     <packaging>jar</packaging>
 
     <properties>
