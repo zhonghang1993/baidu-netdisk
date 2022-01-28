@@ -58,7 +58,7 @@ private BaiduNetDisk baiduNetDisk;
 <dependency>
     <groupId>io.github.zhonghang1993</groupId>
     <artifactId>baidu-netdisk</artifactId>
-    <version>1.6.1</version>
+    <version>1.6.4</version>
 </dependency>
 ```
 
