@@ -5,7 +5,7 @@
     <parent>
         <artifactId>baidu-netdisk</artifactId>
         <groupId>io.github.zhonghang1993</groupId>
-        <version>${baidu-netdisk.version}</version>
+        <version>1.6.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <version>${baidu-netdisk-cp-demo.version}</version>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>io.github.zhonghang1993</groupId>
             <artifactId>baidu-netdisk-cp-spring-boot-start</artifactId>
-            <version>1.0.0</version>
+            <version>${baidu-netdisk-cp-spring-boot-start.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

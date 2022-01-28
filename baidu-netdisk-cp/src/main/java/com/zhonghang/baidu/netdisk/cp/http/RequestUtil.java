@@ -114,7 +114,8 @@ public class RequestUtil {
             log.debug("请求成功，返回信息：{}",response);
             return result;
         }else{
-            log.error("请求出错，错误码：{}；错误原因：{}；\n\r全量错误：{}",result.getInteger("errno") , result.getString("err_msg"),response);
+            String errMsg = result.getString("err_msg") == null ? result.getString("show_msg"):result.getString("err_msg");
+            log.error("请求出错，错误码：{}；错误原因：{}；\n\r全量错误：{}",result.getInteger("errno") ,errMsg,response);
             throw new NetDiskException(result.getString("err_msg"));
         }
     }
