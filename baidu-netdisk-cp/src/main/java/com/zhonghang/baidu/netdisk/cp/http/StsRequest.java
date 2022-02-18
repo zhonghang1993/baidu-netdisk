@@ -73,7 +73,8 @@ public class StsRequest {
 
     public String requestDownloadRealPath(Map<String, String> param, InternalRequest request ,StsInfo stsInfo) {
         RequestDto requestDto = RequestUtil.addSign(param, request ,stsInfo.getAccessKeyId(),stsInfo.getSecretAccessKey());
-        requestDto.getHeader().put("User-Agent","pan.baidu.com");
+        //浏览器使用不能带ua，否则会百度会出302问题
+//        requestDto.getHeader().put("User-Agent","pan.baidu.com");
         return RequestUtil.downloadRealPath(request.getUri().toString() ,requestDto.getHeader());
     }
 
