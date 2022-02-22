@@ -46,9 +46,9 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <gpg.executable>D:\Program Files (x86)\GnuPG\bin\gpg.exe</gpg.executable>
-        <baidu-netdisk-cp.version>1.6.4</baidu-netdisk-cp.version>
-        <baidu-netdisk-cp-spring-boot-start.version>1.6.4</baidu-netdisk-cp-spring-boot-start.version>
-        <baidu-netdisk-cp-demo.version>1.6.4</baidu-netdisk-cp-demo.version>
+        <baidu-netdisk-cp.version>1.6.5.bbs-SNAPSHOT</baidu-netdisk-cp.version>
+        <baidu-netdisk-cp-spring-boot-start.version>1.6.5.bbs-SNAPSHOT</baidu-netdisk-cp-spring-boot-start.version>
+        <baidu-netdisk-cp-demo.version>1.6.5.bbs-SNAPSHOT</baidu-netdisk-cp-demo.version>
     </properties>
 
     <dependencies>
@@ -79,14 +79,16 @@
 
 
     <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
         <repository>
-            <id>ossrh</id>
-            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>releases</id>
+            <name>user release resp</name>
+            <url>http://192.168.10.150:8088/repository/maven-releases/</url>
         </repository>
+
+        <snapshotRepository>
+            <id>Snapshots</id>
+            <url>http://192.168.10.150:8088/repository/maven-snapshots/</url>
+        </snapshotRepository>
     </distributionManagement>
 
 

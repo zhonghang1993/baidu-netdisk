@@ -75,18 +75,19 @@ public class RequestUtil {
         return request(requestDto.getParam(),requestDto.getHeader() , requestBody , request , body ,getForm);
     }
 
-    public static void download(String url,Map<String,String> header ,String saveFilePath ){
+    public static void download(String url,Map<String,String> header ,String saveFilePath,String userAgent ){
         download(url, header, saveFilePath, (realFilePath, saveFilePath1) -> {
             Map<String,String> header1 = new HashMap<>();
             header1.put("User-Agent","pan.baidu.com"); //必须加头部，否则50M以上的文件不能下载
-            download(realFilePath , header1, saveFilePath1);
-        });
+            download(realFilePath , header1, saveFilePath1 ,userAgent);
+        },userAgent);
     }
 
-    public static void download(String url, Map<String,String> header , String saveFilePath, DownLoadCallbackI downLoadCallbackI){
+    public static void download(String url, Map<String,String> header , String saveFilePath, DownLoadCallbackI downLoadCallbackI,String userAgent){
         HttpRequest httpRequest = HttpRequest.get(url)
                 .addHeaders(header)
                 .timeout(20000);//超时，毫秒
+        httpRequest.header("User-Agent" , userAgent);
         HttpResponse response =  httpRequest.execute().sync();
         if (response.isOk()) {
             File outFile = response.completeFileNameFromHeader(new File(saveFilePath));
@@ -100,11 +101,11 @@ public class RequestUtil {
         }
     }
 
-    public static String downloadRealPath(String url,Map<String,String> header){
+    public static String downloadRealPath(String url,Map<String,String> header,String userAgent){
         AtomicReference<String> result = new AtomicReference<>();
         download(url, header, null, (realFilePath, saveFilePath1) -> {
             result.set(realFilePath);
-        });
+        },userAgent);
         return result.get();
     }
 

@@ -145,8 +145,8 @@ public class FileService {
      * @param fid 文件fid
      * @return String
      */
-    public String downloadRealPath(Long cid,String fid){
-        return downloadRealPath(stsService.getStsInfo(cid),fid);
+    public String downloadRealPath(Long cid,String fid,String userAgent){
+        return downloadRealPath(stsService.getStsInfo(cid),fid , userAgent);
     }
 
     /**
@@ -154,16 +154,16 @@ public class FileService {
      * @param fid 文件fid
      * @return String
      */
-    public String defaultDownloadRealPath(String fid){
-        return downloadRealPath(stsService.getDefaultStsInfo(),fid);
+    public String defaultDownloadRealPath(String fid,String userAgent){
+        return downloadRealPath(stsService.getDefaultStsInfo(),fid,userAgent);
     }
 
-    private String downloadRealPath(StsInfo stsInfo,String fid){
+    private String downloadRealPath(StsInfo stsInfo,String fid ,String userAgent){
         FileInfoResponse fileInfo = fileInfo(stsInfo,fid);
         String dlink = fileInfo.getDlink()+"&sts_token="+stsInfo.getSessionToken();
         InternalRequest request = new InternalRequest(HttpMethodName.GET, URI.create(dlink));
         Map<String, String> param =  HttpUtil.decodeParamMap(dlink,"utf-8");
-        return requestUtil.requestDownloadRealPath(param,request ,stsInfo);
+        return requestUtil.requestDownloadRealPath(param,request ,stsInfo,userAgent);
     }
 
 

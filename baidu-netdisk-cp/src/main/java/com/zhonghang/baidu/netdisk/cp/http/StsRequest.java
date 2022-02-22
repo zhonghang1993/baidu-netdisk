@@ -68,14 +68,14 @@ public class StsRequest {
     public  void requestDownload(Map<String, String> param, InternalRequest request , String saveFilePath,StsInfo stsInfo) {
         RequestDto requestDto = RequestUtil.addSign(param, request ,stsInfo.getAccessKeyId(),stsInfo.getSecretAccessKey());
         requestDto.getHeader().put("User-Agent","pan.baidu.com");
-        RequestUtil.download(request.getUri().toString() ,requestDto.getHeader() , saveFilePath);
+        RequestUtil.download(request.getUri().toString() ,requestDto.getHeader() , saveFilePath,"pan.baidu.com");
     }
 
-    public String requestDownloadRealPath(Map<String, String> param, InternalRequest request ,StsInfo stsInfo) {
+    public String requestDownloadRealPath(Map<String, String> param, InternalRequest request ,StsInfo stsInfo,String userAgent) {
         RequestDto requestDto = RequestUtil.addSign(param, request ,stsInfo.getAccessKeyId(),stsInfo.getSecretAccessKey());
-        //浏览器使用不能带ua，否则会百度会出302问题
+        //使用浏览器的ua，否则会百度会出302问题
 //        requestDto.getHeader().put("User-Agent","pan.baidu.com");
-        return RequestUtil.downloadRealPath(request.getUri().toString() ,requestDto.getHeader());
+        return RequestUtil.downloadRealPath(request.getUri().toString() ,requestDto.getHeader(), userAgent);
     }
 
 
