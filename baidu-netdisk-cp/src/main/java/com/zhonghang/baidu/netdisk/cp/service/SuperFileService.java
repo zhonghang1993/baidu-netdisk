@@ -8,6 +8,7 @@ import com.baidubce.http.HttpMethodName;
 import com.baidubce.internal.InternalRequest;
 import com.zhonghang.baidu.netdisk.cp.config.BaiduConfig;
 import com.zhonghang.baidu.netdisk.cp.dto.*;
+import com.zhonghang.baidu.netdisk.cp.exception.NetDiskException;
 import com.zhonghang.baidu.netdisk.cp.http.StsRequest;
 import com.zhonghang.baidu.netdisk.cp.response.AccessTokenVo;
 import com.zhonghang.baidu.netdisk.cp.response.PreUploadResponse;
@@ -15,9 +16,12 @@ import com.zhonghang.baidu.netdisk.cp.response.SliceCreateResponse;
 import com.zhonghang.baidu.netdisk.cp.util.FileSeparateUtil;
 import com.zhonghang.baidu.netdisk.cp.util.Md5Util;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.exception.ExceptionUtils;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -165,12 +169,17 @@ public class SuperFileService {
 
     private String getUploadUrl(SliceUploadDto uploadDto ,int i ,AccessTokenVo accessTokenVo){
         StringBuilder url = new StringBuilder();
-        url.append("https://d.pcs.baidu.com/rest/2.0/pcs/superfile2?method=upload")
-                .append("&access_token=").append(accessTokenVo.getAccessToken())
-                .append("&type=").append(uploadDto.getType())
-                .append("&partseq=" ).append( i )
-                .append("&path=" ).append(uploadDto.getPath())
-                .append("&uploadid=").append( uploadDto.getUploadid());
+        try {
+            url.append("https://d.pcs.baidu.com/rest/2.0/pcs/superfile2?method=upload")
+                    .append("&access_token=").append(accessTokenVo.getAccessToken())
+                    .append("&type=").append(uploadDto.getType())
+                    .append("&partseq=" ).append( i )
+                    .append("&path=" ).append(URLEncoder.encode(uploadDto.getPath(), "utf-8"))
+                    .append("&uploadid=").append( uploadDto.getUploadid());
+        } catch (UnsupportedEncodingException e) {
+            log.error("上传路径urlEncoder失败，详情：{}" , ExceptionUtils.getFullStackTrace(e));
+            throw new NetDiskException("上传路径urlEncoder失败");
+        }
         return url.toString();
     }
 
