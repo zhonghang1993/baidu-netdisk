@@ -14,8 +14,8 @@
 ```xml
 <dependency>
     <groupId>io.github.zhonghang1993</groupId>
-    <artifactId>baidu-netdisk-cp-spring-boot-start</artifactId>
-    <version>1.6.1</version>
+    <artifactId>baidu-netdisk-cp-spring-boot-starter</artifactId>
+    <version>1.6.6</version>
 </dependency>
 ```
 
@@ -58,7 +58,7 @@ private BaiduNetDisk baiduNetDisk;
 <dependency>
     <groupId>io.github.zhonghang1993</groupId>
     <artifactId>baidu-netdisk</artifactId>
-    <version>1.6.4</version>
+    <version>1.6.6</version>
 </dependency>
 ```
 
@@ -114,11 +114,8 @@ baiduNetDisk.getStsService();
 
 ## 四、常见问题
 
-### 4-1 如何同时管理多个用户的授权空间？
 
-目前你就new多个BaiduNetDisk，虽然不优雅，但是可以解决问题。 ~~正在重构中~~
-
-### 4-2 【解绑】如何清空授权信息？
+### 4-1 【解绑】如何清空授权信息？
 
 ```java
 //清除指定企业网盘
@@ -126,7 +123,7 @@ storageDaoI.clear(Long cid);
 ```
 如果你觉得直接设置null无法处理你的业务场景，可以重写clear方法。
 
-### 4-3 怎么显示打印日志？
+### 4-2 怎么显示打印日志？
 
 在你的日志配置文件，扫描路径加上`com.zhonghang.baidu`就可以了
 

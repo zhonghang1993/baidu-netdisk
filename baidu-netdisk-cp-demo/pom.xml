@@ -36,7 +36,7 @@
 
         <dependency>
             <groupId>io.github.zhonghang1993</groupId>
-            <artifactId>baidu-netdisk-cp-spring-boot-start</artifactId>
+            <artifactId>baidu-netdisk-cp-spring-boot-starter</artifactId>
             <version>${baidu-netdisk-cp-spring-boot-start.version}</version>
         </dependency>
         <dependency>
