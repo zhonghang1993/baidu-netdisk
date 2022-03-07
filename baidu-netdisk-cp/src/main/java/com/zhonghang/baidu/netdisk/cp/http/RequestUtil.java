@@ -14,11 +14,13 @@ import com.baidubce.internal.InternalRequest;
 import com.baidubce.util.DateUtils;
 import com.zhonghang.baidu.netdisk.cp.dto.RequestDto;
 import com.zhonghang.baidu.netdisk.cp.exception.NetDiskException;
-import com.zhonghang.baidu.netdisk.cp.service.DownLoadCallbackI;
+import com.zhonghang.baidu.netdisk.cp.function.DownLoadCallbackI;
+import com.zhonghang.baidu.netdisk.cp.function.DownLoadSaveCallbackI;
 import com.zhonghang.baidu.netdisk.cp.signer.AdmsBceV1Signer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -76,25 +78,42 @@ public class RequestUtil {
     }
 
     public static void download(String url,Map<String,String> header ,String saveFilePath,String userAgent ){
-        download(url, header, saveFilePath, (realFilePath, saveFilePath1) -> {
-            Map<String,String> header1 = new HashMap<>();
-            header1.put("User-Agent","pan.baidu.com"); //必须加头部，否则50M以上的文件不能下载
-            download(realFilePath , header1, saveFilePath1 ,userAgent);
-        },userAgent);
+        download(url, header, response -> {
+            File outFile = response.completeFileNameFromHeader(new File(saveFilePath));
+            response.writeBody(outFile, null);
+        }, (realFilePath) -> {
+            Map<String, String> header1 = new HashMap<>();
+            header1.put("User-Agent", "pan.baidu.com"); //必须加头部，否则50M以上的文件不能下载
+            download(realFilePath, header1 , saveFilePath, userAgent); //调用自己302了，继续处理
+        }, userAgent);
     }
 
-    public static void download(String url, Map<String,String> header , String saveFilePath, DownLoadCallbackI downLoadCallbackI,String userAgent){
+    public static void download(String url, Map<String,String> header , OutputStream outputStream,boolean isCloseOut, String userAgent ){
+
+        download(url, header, new DownLoadSaveCallbackI() {
+            @Override
+            public void save(HttpResponse response) {
+                response.writeBody(outputStream,isCloseOut, null);
+            }
+        }, (realFilePath) -> {
+            Map<String, String> header1 = new HashMap<>();
+            header1.put("User-Agent", "pan.baidu.com"); //必须加头部，否则50M以上的文件不能下载
+            download(realFilePath, header1, outputStream,isCloseOut, userAgent);
+        }, userAgent);
+    }
+
+    public static void download(String url, Map<String,String> header , DownLoadSaveCallbackI saveCallbackI, DownLoadCallbackI downLoadCallbackI, String userAgent){
         HttpRequest httpRequest = HttpRequest.get(url)
                 .addHeaders(header)
                 .timeout(20000);//超时，毫秒
         httpRequest.header("User-Agent" , userAgent);
         HttpResponse response =  httpRequest.execute().sync();
         if (response.isOk()) {
-            File outFile = response.completeFileNameFromHeader(new File(saveFilePath));
-            response.writeBody(outFile, null);
+            saveCallbackI.save(response);
+
         }else if(response.getStatus() == 302){
             log.debug("302重定向：{}" , response.header("Location"));
-            downLoadCallbackI.callback(response.header("Location"), saveFilePath);
+            downLoadCallbackI.callback302(response.header("Location"));
         }else{
             log.error("下载出错；状态码：{}，错误信息：{}" ,response.getStatus(), JSONArray.parseObject(response.body()));
             throw new NetDiskException("文件下载出错：状态码："+response.getStatus()+"，错误信息："+response.body());
@@ -103,7 +122,7 @@ public class RequestUtil {
 
     public static String downloadRealPath(String url,Map<String,String> header,String userAgent){
         AtomicReference<String> result = new AtomicReference<>();
-        download(url, header, null, (realFilePath, saveFilePath1) -> {
+        download(url, header, null, (realFilePath) -> {
             result.set(realFilePath);
         },userAgent);
         return result.get();

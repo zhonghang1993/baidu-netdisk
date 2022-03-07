@@ -11,6 +11,7 @@ import com.zhonghang.baidu.netdisk.cp.service.StsService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.util.Map;
 
 /**
@@ -69,6 +70,12 @@ public class StsRequest {
         RequestDto requestDto = RequestUtil.addSign(param, request ,stsInfo.getAccessKeyId(),stsInfo.getSecretAccessKey());
         requestDto.getHeader().put("User-Agent","pan.baidu.com");
         RequestUtil.download(request.getUri().toString() ,requestDto.getHeader() , saveFilePath,"pan.baidu.com");
+    }
+
+    public  void requestDownload(Map<String, String> param, InternalRequest request , OutputStream outputStream, boolean isCloseOut, StsInfo stsInfo) {
+        RequestDto requestDto = RequestUtil.addSign(param, request ,stsInfo.getAccessKeyId(),stsInfo.getSecretAccessKey());
+        requestDto.getHeader().put("User-Agent","pan.baidu.com");
+        RequestUtil.download(request.getUri().toString() ,requestDto.getHeader() , outputStream,isCloseOut,"pan.baidu.com");
     }
 
     public String requestDownloadRealPath(Map<String, String> param, InternalRequest request ,StsInfo stsInfo,String userAgent) {

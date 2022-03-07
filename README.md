@@ -15,7 +15,7 @@
 <dependency>
     <groupId>io.github.zhonghang1993</groupId>
     <artifactId>baidu-netdisk-cp-spring-boot-starter</artifactId>
-    <version>1.6.7</version>
+    <version>1.6.8</version>
 </dependency>
 ```
 

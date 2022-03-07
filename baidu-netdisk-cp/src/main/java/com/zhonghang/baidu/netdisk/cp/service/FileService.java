@@ -7,6 +7,7 @@ import com.baidubce.http.HttpMethodName;
 import com.baidubce.internal.InternalRequest;
 import com.zhonghang.baidu.netdisk.cp.config.BaiduConfig;
 import com.zhonghang.baidu.netdisk.cp.dto.*;
+import com.zhonghang.baidu.netdisk.cp.function.SetNameI;
 import com.zhonghang.baidu.netdisk.cp.http.StsRequest;
 import com.zhonghang.baidu.netdisk.cp.response.DLinkResponse;
 import com.zhonghang.baidu.netdisk.cp.response.FileInfoResponse;
@@ -14,6 +15,7 @@ import com.zhonghang.baidu.netdisk.cp.response.ListFileResponse;
 import com.zhonghang.baidu.netdisk.cp.util.BeanUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -137,6 +139,43 @@ public class FileService {
         List<String> fids = new ArrayList<>();
         fids.add(fid);
         download(saveFilePath,stsService.getDefaultStsInfo(),fids);
+    }
+
+    /**
+     * 下载到指定的outpuStream
+     * @param outputStream 输出流
+     * @param isCloseOut 处理完成后，是否关闭OutputStream输出流
+     * @param fid 文件fid
+     * @return 返回文件名称
+     */
+    public FileInfoResponse defaultDownload(OutputStream outputStream ,boolean isCloseOut, String fid){
+        return download(outputStream ,null,isCloseOut,stsService.getDefaultStsInfo(),fid);
+    }
+
+    /**
+     * 下载到指定的outpuStream
+     * @param outputStream 输出流
+     * @param setNameI 回调写文件流的名字
+     * @param isCloseOut 处理完成后，是否关闭OutputStream输出流
+     * @param fid 文件fid
+     * @return 返回文件名称
+     */
+    public FileInfoResponse defaultDownload(OutputStream outputStream, SetNameI setNameI, boolean isCloseOut, String fid){
+        return download(outputStream,setNameI,isCloseOut,stsService.getDefaultStsInfo(),fid);
+    }
+
+    private FileInfoResponse download(OutputStream outputStream, SetNameI setNameI,boolean isCloseOut, StsInfo stsInfo, String fid) {
+        //获取文件信息的dlink
+        FileInfoResponse fileInfo = fileInfo(stsInfo,fid);
+        if(setNameI != null){
+            setNameI.setName(fileInfo);
+        }
+        String dlink = fileInfo.getDlink()+"&sts_token="+stsInfo.getSessionToken();
+        InternalRequest request = new InternalRequest(HttpMethodName.GET, URI.create(dlink));
+        Map<String, String> param =  HttpUtil.decodeParamMap(dlink,"utf-8");
+        requestUtil.requestDownload(param,request ,outputStream , isCloseOut ,stsInfo);
+
+        return fileInfo;
     }
 
     /**
