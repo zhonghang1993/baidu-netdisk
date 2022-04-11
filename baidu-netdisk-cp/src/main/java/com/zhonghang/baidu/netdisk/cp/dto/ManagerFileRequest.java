@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ManagerFileRequest {
 
-    enum Opera{
+    public enum Opera{
         copy, move, rename, delete
     }
 
