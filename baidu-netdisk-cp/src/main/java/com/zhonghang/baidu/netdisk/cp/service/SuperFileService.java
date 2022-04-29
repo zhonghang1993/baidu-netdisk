@@ -44,12 +44,10 @@ public class SuperFileService {
         this.accessTokenService = accessTokenService;
     }
 
-    private SliceCreateResponse upload(String localFilePath , String saveFilePath,StsInfo stsInfo, AccessTokenVo accessTokenVo) {
+    private SliceCreateResponse upload(File file, String saveFilePath,StsInfo stsInfo, AccessTokenVo accessTokenVo ){
         String cloudPath = URLUtil.encode(baiduConfig.getFilePrefix() + saveFilePath);
 
-        //文件分片并获取md5值
-        File file = new File(localFilePath);
-        File[] separate = FileSeparateUtil.separate(localFilePath, baiduConfig.getUnit());
+        File[] separate = FileSeparateUtil.separate(file, baiduConfig.getUnit());
 
         JSONArray md5Array = new JSONArray();
         if (separate.length == 1) {
@@ -96,8 +94,16 @@ public class SuperFileService {
         return sliceCreateVo;
     }
 
+    private SliceCreateResponse upload(String localFilePath , String saveFilePath,StsInfo stsInfo, AccessTokenVo accessTokenVo) {
+        return upload(new File(localFilePath) , saveFilePath,stsInfo,accessTokenVo);
+    }
+
     public SliceCreateResponse defaultUpload(String localFilePath , String saveFilePath) {
         return upload(localFilePath,saveFilePath,stsService.getDefaultStsInfo(), accessTokenService.getDefaultAccessToken());
+    }
+
+    public SliceCreateResponse defaultUpload(File file , String saveFilePath) {
+        return upload(file,saveFilePath,stsService.getDefaultStsInfo(), accessTokenService.getDefaultAccessToken());
     }
 
     /**

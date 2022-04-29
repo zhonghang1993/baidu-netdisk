@@ -91,10 +91,11 @@ public class AccessTokenService {
         param.put("client_secret" , baiduConfig.getSecretKey());
         String resultStr = HttpUtil.get(" https://openapi.baidu.com/oauth/2.0/token", param);
         //?处理异常
+        log.debug("flush token :{}" ,resultStr);
         AccessTokenVo accessTokenVo = JSON.parseObject(resultStr, AccessTokenVo.class);
         log.debug("token失效，刷新token：{}" , accessTokenVo.getAccessToken());
         //提前60秒过期
-        accessTokenVo.setExpiresSecond(DateUtil.currentSeconds() + accessTokenVo.getExpiresIn()-60);
+        accessTokenVo.setExpiresSecond(accessTokenVo.getExpiration().getSeconds()-60);
         storageDaoI.saveAccessToken(accessTokenVo ,cid);
         return accessTokenVo;
     }
