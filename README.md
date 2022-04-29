@@ -15,7 +15,7 @@
 <dependency>
     <groupId>io.github.zhonghang1993</groupId>
     <artifactId>baidu-netdisk-cp-spring-boot-starter</artifactId>
-    <version>1.7.0</version>
+    <version>1.7.1</version>
 </dependency>
 ```
 
@@ -58,7 +58,7 @@ private BaiduNetDisk baiduNetDisk;
 <dependency>
     <groupId>io.github.zhonghang1993</groupId>
     <artifactId>baidu-netdisk</artifactId>
-    <version>1.7.0</version>
+    <version>1.7.1</version>
 </dependency>
 ```
 

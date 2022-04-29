@@ -47,17 +47,17 @@ public class SuperFileService {
     private SliceCreateResponse upload(File file, String saveFilePath,StsInfo stsInfo, AccessTokenVo accessTokenVo ){
         String cloudPath = URLUtil.encode(baiduConfig.getFilePrefix() + saveFilePath);
 
-        File[] separate = FileSeparateUtil.separate(file, baiduConfig.getUnit());
+        List<File> separate = FileSeparateUtil.separate(file, baiduConfig.getUnit());
 
         JSONArray md5Array = new JSONArray();
-        if (separate.length == 1) {
-            md5Array.add(Md5Util.getMD5(separate[0]));
+        if (separate.size() == 1) {
+            md5Array.add(Md5Util.getMD5(separate.get(0)));
 
         }
-        if (separate.length > 1) {
-            for (int i = 0; i < separate.length; i++) {
-                md5Array.add(Md5Util.getMD5(separate[i]));
-                log.debug("正在分片,{}{}", separate[i].toString(), i);
+        if (separate.size() > 1) {
+            for (int i = 0; i < separate.size(); i++) {
+                md5Array.add(Md5Util.getMD5(separate.get(i)));
+                log.debug("正在分片,{}{}", separate.get(i).toString(), i);
             }
         }
 
@@ -158,18 +158,19 @@ public class SuperFileService {
      * @param files 文件
      * @param cid 企业空间id
      */
-    private void upload(SliceUploadDto uploadDto , File[] files,Long cid) {
+    private void upload(SliceUploadDto uploadDto , List<File> files,Long cid) {
         StsInfo stsInfo = stsService.getStsInfo(cid);
         upload(uploadDto,files,stsInfo,accessTokenService.getAccessToken(cid));
     }
 
-    private void upload(SliceUploadDto uploadDto , File[] files, StsInfo stsInfo , AccessTokenVo accessTokenVo) {
-        for (int i = 0; i < files.length; i++) {
+    private void upload(SliceUploadDto uploadDto , List<File> files, StsInfo stsInfo , AccessTokenVo accessTokenVo) {
+        for (int i = 0; i < files.size(); i++) {
 
             InternalRequest request = new InternalRequest(HttpMethodName.POST, URI.create(getUploadUrl(uploadDto,i,accessTokenVo)));
             Map<String, String> param = HttpUtil.decodeParamMap(request.getUri().toString(),"utf-8");
-            requestUtil.requestFile(param,files[i],request,stsInfo);
+            requestUtil.requestFile(param,files.get(i),request,stsInfo);
             log.debug("正在上传分片文件{}",  i);
+            files.get(i).delete();
         }
     }
 
@@ -215,7 +216,7 @@ public class SuperFileService {
         return result;
     }
 
-    private void defaultUpload(SliceUploadDto uploadDto , File[] files){
+    private void defaultUpload(SliceUploadDto uploadDto , List<File> files){
         upload(uploadDto,files,stsService.getDefaultStsInfo(),accessTokenService.getDefaultAccessToken());
     }
 

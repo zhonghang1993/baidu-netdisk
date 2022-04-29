@@ -44,7 +44,7 @@ public class RequestUtil {
             HttpRequest httpRequest =  HttpRequest.get(request.getUri().toString())
                     .addHeaders(header)
                     .form(getForm ? param : null)
-                    .timeout(20000);//超时，毫秒
+                    .timeout(Integer.MAX_VALUE);//超时，毫秒
 
             if(body){
                 httpRequest.body(body ? requestBody : null);
@@ -55,7 +55,7 @@ public class RequestUtil {
             HttpRequest httpRequest =  HttpRequest.post(request.getUri().toString())
                     .addHeaders(header)
                     .form(body == false ? param : null)
-                    .timeout(20000);//超时，毫秒
+                    .timeout(Integer.MAX_VALUE);//超时，毫秒
             if(body){
                 httpRequest.body(body ? requestBody : null);
             }
@@ -105,7 +105,7 @@ public class RequestUtil {
     public static void download(String url, Map<String,String> header , DownLoadSaveCallbackI saveCallbackI, DownLoadCallbackI downLoadCallbackI, String userAgent){
         HttpRequest httpRequest = HttpRequest.get(url)
                 .addHeaders(header)
-                .timeout(20000);//超时，毫秒
+                .timeout(Integer.MAX_VALUE);//超时，毫秒
         httpRequest.header("User-Agent" , userAgent);
         HttpResponse response =  httpRequest.execute().sync();
         if (response.isOk()) {
@@ -129,6 +129,7 @@ public class RequestUtil {
     }
 
     private static JSONObject formatResult(String response){
+        log.debug("请求返回原始信息：{}" ,response);
         JSONObject result = JSONObject.parseObject(response);
         if(result.getInteger("errno") ==0){
             log.debug("请求成功，返回信息：{}",response);
