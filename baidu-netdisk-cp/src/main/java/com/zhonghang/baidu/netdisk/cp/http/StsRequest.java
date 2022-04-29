@@ -47,7 +47,7 @@ public class StsRequest {
                 .addHeaders(requestDto.getHeader())
                 .header("Host","d.pcs.baidu.com")
                 .form("file" , file)
-                .timeout(20000);//超时，毫秒
+                .timeout(Integer.MAX_VALUE);//超时，毫秒
         String response = httpRequest.execute().body();
         JSONObject result = JSONObject.parseObject(response);
         if(result.getInteger("error_code") != null && result.getInteger("error_code") !=0){
