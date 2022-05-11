@@ -170,7 +170,9 @@ public class SuperFileService {
             Map<String, String> param = HttpUtil.decodeParamMap(request.getUri().toString(),"utf-8");
             requestUtil.requestFile(param,files.get(i),request,stsInfo);
             log.debug("正在上传分片文件{}",  i);
-            files.get(i).delete();
+            if(files.size() != 1){
+                files.get(i).delete();
+            }
         }
     }
 
