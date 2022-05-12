@@ -15,7 +15,7 @@
         <module>baidu-netdisk-cp-demo</module>
     </modules>
     <description>baidu netdisk SDK</description>
-    <version>1.7.2</version>
+    <version>1.7.3</version>
 
     <licenses>
         <license>
@@ -46,10 +46,10 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <gpg.executable>D:\Program Files (x86)\GnuPG\bin\gpg.exe</gpg.executable>
-        <baidu-netdisk.version>1.7.2</baidu-netdisk.version>
-        <baidu-netdisk-cp.version>1.7.2</baidu-netdisk-cp.version>
-        <baidu-netdisk-cp-spring-boot-start.version>1.7.2</baidu-netdisk-cp-spring-boot-start.version>
-        <baidu-netdisk-cp-demo.version>1.7.2</baidu-netdisk-cp-demo.version>
+        <baidu-netdisk.version>1.7.3</baidu-netdisk.version>
+        <baidu-netdisk-cp.version>1.7.3</baidu-netdisk-cp.version>
+        <baidu-netdisk-cp-spring-boot-start.version>1.7.3</baidu-netdisk-cp-spring-boot-start.version>
+        <baidu-netdisk-cp-demo.version>1.7.3</baidu-netdisk-cp-demo.version>
     </properties>
 
     <dependencies>
@@ -90,7 +90,18 @@
         </repository>
     </distributionManagement>
 
+<!--    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>user release resp</name>
+            <url>http://192.168.10.150:8088/repository/maven-releases/</url>
+        </repository>
 
+        <snapshotRepository>
+            <id>Snapshots</id>
+            <url>http://192.168.10.150:8088/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>-->
 
     <build>
         <plugins>

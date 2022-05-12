@@ -96,6 +96,10 @@ public class FileService {
     }
 
     public void managerFile(ManagerFileRequest managerFileRequest,StsInfo stsInfo){
+        //处理根目录
+        for (int i = 0; i < managerFileRequest.getFilelist().size(); i++) {
+            managerFileRequest.getFilelist().set(i , baiduConfig.getFilePrefix() + managerFileRequest.getFilelist().getString(i));
+        }
         String requestBody = "filelist="+managerFileRequest.getFilelist().toJSONString();
         if(managerFileRequest.getAsync() != null){
             requestBody +="&async="+managerFileRequest.getAsync();
